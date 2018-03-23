@@ -1,0 +1,136 @@
+#!/bin/bash
+#
+# chkconfig: 35 90 12
+# description: Servus
+#
+
+### BEGIN INIT INFO
+# Provides:             servus
+# Required-Start:       $syslog
+# Required-Stop:        $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# Short-Description:    Servus
+### END INIT INFO
+
+# Load common library.
+#
+. /lib/lsb/init-functions
+
+LOCKFILE="/var/run/servus.pid"
+RUNNING=0
+
+# Check whether servus is already running.
+# Returns:
+#      0: servus is not running
+#      1: servus is running
+#
+already_running()
+{
+    # Service is not running if lock file does not exist.
+    #
+    if [ ! -f "$LOCKFILE" ]; then
+        RUNNING=0
+        return
+    fi
+
+    PID=`cat $LOCKFILE`
+
+    ps --pid $PID > /dev/null 2>&1
+    #
+    # Service is running if ps command gives 0 as return code.
+    #
+    if [ $? -eq 0 ]; then
+        RUNNING=1
+        return
+    else
+        RUNNING=0
+        return
+    fi
+}
+
+# Start servus.
+#
+start()
+{
+    log_daemon_msg "Starting servus" "servus"
+
+    already_running
+    if [ $RUNNING == 1 ]; then
+        log_progress_msg "already running"
+        log_end_msg 0
+    else
+        /opt/servus/servus
+
+        log_progress_msg "started"
+        log_end_msg 0
+    fi
+}
+
+# Stop servus.
+#
+stop()
+{
+    log_daemon_msg "Stopping servus" "servus"
+
+    already_running
+    if [ $RUNNING == 1 ]; then
+        PID=`cat $LOCKFILE`
+
+        # Kill daemon process.
+        #
+        kill -KILL $PID > /dev/null 2>&1
+
+        if [ $? -eq 0 ]; then
+            log_progress_msg "stopped"
+            log_end_msg 0
+        else
+            log_progress_msg "cannot be stopped"
+            log_end_msg 0
+        fi
+
+        # Remove lock file.
+        #
+        rm --force $LOCKFILE
+    else
+        log_progress_msg "is not running"
+        log_end_msg 0
+    fi
+}
+
+# Show status of servus.
+#
+status()
+{
+    already_running
+    if [ $RUNNING == 1 ]; then
+        log_action_msg "Servus is running"
+    else
+        log_action_msg "Servus is not running"
+    fi
+}
+
+case "$1" in
+    'start')
+        start
+        ;;
+
+    'stop')
+        stop
+        ;;
+
+    'restart'|'reload')
+        stop
+        start
+        ;;
+
+    'status')
+        status
+        ;;
+
+    *)
+        echo "Usage: $SELF start|stop|restart|reload|status"
+        exit 1
+esac
+
+exit 0
