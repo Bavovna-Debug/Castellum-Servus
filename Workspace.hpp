@@ -2,15 +2,15 @@
 
 // Common definition files.
 //
-#include "GPIO/Therma.h"
-#include "HTTP/Service.h"
-#include "MMPS/MMPS.h"
-#include "MODBUS/Service.h"
-#include "Toolkit/Workspace.h"
+#include "GPIO/Therma.hpp"
+#include "HTTP/Service.hpp"
+#include "MODBUS/Service.hpp"
+#include "Toolkit/MMPS.hpp"
+#include "Toolkit/Workspace.hpp"
 
 // Local definition files.
 //
-#include "Servus/GKrellM.h"
+#include "Servus/GKrellM.hpp"
 
 namespace Workspace
 {

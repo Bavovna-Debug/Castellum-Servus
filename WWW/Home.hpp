@@ -6,9 +6,9 @@
 
 // Common definition files.
 //
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/Site.h"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/Site.hpp"
 
 namespace WWW
 {

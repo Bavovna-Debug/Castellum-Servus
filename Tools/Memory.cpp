@@ -4,7 +4,7 @@
 
 // Local definition files.
 //
-#include "Servus/Tools/Memory.h"
+#include "Servus/Tools/Memory.hpp"
 
 #ifdef INTEL
 

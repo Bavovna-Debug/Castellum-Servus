@@ -8,7 +8,7 @@
 
 // Local definition files.
 //
-#include "Servus/Workspace.h"
+#include "Servus/Workspace.hpp"
 
 int
 main(void)

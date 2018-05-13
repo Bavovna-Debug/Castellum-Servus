@@ -23,16 +23,15 @@
 
 // Common definition files.
 //
-#include "GPIO/Therma.h"
-#include "Toolkit/Abacus.h"
+#include "GPIO/Therma.hpp"
 #include "Toolkit/Report.h"
-#include "Toolkit/Times.h"
+#include "Toolkit/Times.hpp"
 #include "Toolkit/Types.h"
 
 // Local definition files.
 //
-#include "Servus/GKrellM.h"
-#include "Servus/Workspace.h"
+#include "Servus/GKrellM.hpp"
+#include "Servus/Workspace.hpp"
 
 static void *
 GKrellM_ThreadHandler(void *);

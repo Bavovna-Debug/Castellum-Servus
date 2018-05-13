@@ -10,23 +10,23 @@
 
 // Common definition files.
 //
-#include "GPIO/GPIO.h"
-#include "GPIO/LCD.h"
-#include "GPIO/Relay.h"
-#include "GPIO/Strip.h"
-#include "GPIO/Therma.h"
-#include "HTTP/Service.h"
-#include "MMPS/MMPS.h"
-#include "MODBUS/Service.h"
-#include "Signals/Signals.h"
+#include "GPIO/GPIO.hpp"
+#include "GPIO/LCD.hpp"
+#include "GPIO/Relay.hpp"
+#include "GPIO/Strip.hpp"
+#include "GPIO/Therma.hpp"
+#include "HTTP/Service.hpp"
+#include "MODBUS/Service.hpp"
+#include "Toolkit/MMPS.hpp"
 #include "Toolkit/Report.h"
+#include "Toolkit/Signals.hpp"
 
 // Local definition files.
 //
-#include "Servus/Configuration.h"
-#include "Servus/GKrellM.h"
-#include "Servus/Workspace.h"
-#include "Servus/WWW/Home.h"
+#include "Servus/Configuration.hpp"
+#include "Servus/GKrellM.hpp"
+#include "Servus/Workspace.hpp"
+#include "Servus/WWW/Home.hpp"
 
 using namespace libconfig;
 

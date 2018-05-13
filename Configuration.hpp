@@ -6,8 +6,6 @@
 #define CONFIG_SENSORS_THERMA_NAME      "Name"
 #define CONFIG_SENSORS_THERMA_MODBUS_ID "MODBUS"
 
-using namespace std;
-
 namespace Configuration
 {
     const unsigned MODBUSPortNumber = 502;

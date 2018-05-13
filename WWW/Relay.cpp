@@ -1,13 +1,13 @@
 // Common definition files.
 //
-#include "GPIO/Relay.h"
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
+#include "GPIO/Relay.hpp"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/WWW/Home.hpp"
 
 /**
  * @brief   Generate HTML page for the 'Relay' tab.

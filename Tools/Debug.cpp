@@ -12,8 +12,8 @@
 
 // Local definition files.
 //
-#include "Servus/Tools/Debug.h"
-#include "Servus/Tools/Memory.h"
+#include "Servus/Tools/Debug.hpp"
+#include "Servus/Tools/Memory.hpp"
 
 /**
  * @brief   Dump data in hexadecimal form.

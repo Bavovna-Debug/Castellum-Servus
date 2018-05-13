@@ -5,16 +5,16 @@
 
 // Common definition files.
 //
-#include "GPIO/Relay.h"
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
-#include "HTTP/Site.h"
+#include "GPIO/Relay.hpp"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
+#include "HTTP/Site.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/WWW/Home.hpp"
 
 using namespace HTML;
 
