@@ -1,15 +1,16 @@
 // System definition files.
 //
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <libconfig.h++>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
 
 // Common definition files.
 //
+#include "Communicator/IP.hpp"
 #include "GPIO/GPIO.hpp"
 #include "GPIO/LCD.hpp"
 #include "GPIO/Relay.hpp"
@@ -190,15 +191,18 @@ Workspace::Servus::kernelInit()
     //
     {
         this->http = new HTTP::Service(new WWW::Site(),
-                "HTTP",
-                Communicator::IPv4,
-                9000);
+                IP::IPv4,
+                "",
+                9000,
+                0x9000,
+                0xAA00,
+                0xDEADBEEF);
 
         this->initializeMMPS();
     }
 
-    Signals::SetSignalCaptureOn(SIGINT, OwnSignalHandler);
-    Signals::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);
+    Toolkit::SetSignalCaptureOn(SIGINT, OwnSignalHandler);
+    Toolkit::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);
 }
 
 const unsigned int rows[4] = { 05, 06, 12, 13 }; //{ 29, 31, 32, 33 };
@@ -320,8 +324,8 @@ Workspace::Servus::kernelWait()
 void
 Workspace::Servus::kernelDone()
 {
-    Signals::SetSignalCaptureOff(SIGINT);
-    Signals::SetSignalCaptureOff(SIGTERM);
+    Toolkit::SetSignalCaptureOff(SIGINT);
+    Toolkit::SetSignalCaptureOff(SIGTERM);
 
     try
     {

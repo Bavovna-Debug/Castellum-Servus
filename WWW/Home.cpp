@@ -1,6 +1,6 @@
 // System definition files.
 //
-#include <stdbool.h>
+#include <cstdbool>
 #include <stdexcept>
 
 // Common definition files.

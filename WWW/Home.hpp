@@ -2,7 +2,7 @@
 
 // System definition files.
 //
-#include <stdbool.h>
+#include <cstdbool>
 
 // Common definition files.
 //
