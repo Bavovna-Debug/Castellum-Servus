@@ -18,13 +18,13 @@ LIBS += -L../MODBUS/
 LIBS += -L../Signals/
 LIBS += -L../Toolkit/
 
-LIBS += -lCommunicator
 LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lMODBUS
 LIBS += -lSignals
 LIBS += -lToolkit
+LIBS += -lCommunicator
 LIBS += -pthread
 LIBS += -lconfig++
 LIBS += -lbz2
