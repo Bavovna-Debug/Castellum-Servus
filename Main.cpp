@@ -8,20 +8,20 @@
 
 // Local definition files.
 //
-#include "Servus/Workspace.hpp"
+#include "Servus/Kernel.hpp"
 
 int
 main(void)
 {
     try
     {
-        Workspace::Servus &workspace = Workspace::Servus::InitInstance();
+        Workspace::Kernel& kernel = Workspace::Kernel::InitInstance();
 
-        workspace.activateSysLog(Workspace::Daemon, Workspace::Debug, "servus");
+        kernel.activateSysLog(Workspace::Daemon, Workspace::Debug, "servus");
 
-        workspace.daemonize("/opt/servus/");
+        kernel.daemonize("/opt/servus/");
 
-        workspace.run();
+        kernel.run();
     }
     catch (std::exception &exception)
     {

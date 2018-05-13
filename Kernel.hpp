@@ -14,7 +14,7 @@
 
 namespace Workspace
 {
-    class Servus : public Application
+    class Kernel : public Application
     {
         typedef Application Inherited;
 
@@ -26,17 +26,17 @@ namespace Workspace
         unsigned long           timestampOfStart;
 
         struct GKrellM_Service  gkrellm;
-        MODBUS::Service         *modbus;
-        HTTP::Service           *http;
+        MODBUS::Service*        modbus;
+        HTTP::Service*          http;
 
     public:
-        static Servus &
+        static Kernel&
         InitInstance();
 
-        static Servus &
+        static Kernel&
         SharedInstance();
 
-        Servus();
+        Kernel();
 
     public:
         void

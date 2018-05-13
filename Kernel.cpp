@@ -26,29 +26,29 @@
 //
 #include "Servus/Configuration.hpp"
 #include "Servus/GKrellM.hpp"
-#include "Servus/Workspace.hpp"
+#include "Servus/Kernel.hpp"
 #include "Servus/WWW/Home.hpp"
 
 using namespace libconfig;
 
 static void
-OwnSignalHandler(int signal_number);
+OwnSignalHandler(int signalNumber);
 
-static Workspace::Servus *instance = NULL;
+static Workspace::Kernel* instance = NULL;
 
-Workspace::Servus &
-Workspace::Servus::InitInstance()
+Workspace::Kernel&
+Workspace::Kernel::InitInstance()
 {
     if (instance != NULL)
         throw std::runtime_error("Workspace already initialized");
 
-    instance = new Workspace::Servus();
+    instance = new Workspace::Kernel();
 
     return *instance;
 }
 
-Workspace::Servus &
-Workspace::Servus::SharedInstance()
+Workspace::Kernel&
+Workspace::Kernel::SharedInstance()
 {
     if (instance == NULL)
         throw std::runtime_error("Workspace not initialized");
@@ -56,7 +56,7 @@ Workspace::Servus::SharedInstance()
     return *instance;
 }
 
-Workspace::Servus::Servus() :
+Workspace::Kernel::Kernel() :
 Inherited()
 {
     try
@@ -68,7 +68,7 @@ Inherited()
     }
     catch (std::exception &exception)
     {
-        ReportWarning("[Workspace] Exception: %s", exception.what());
+        ReportWarning("[Kernel] Exception: %s", exception.what());
     }
 }
 
@@ -79,12 +79,12 @@ Inherited()
  * @return  Error code (negative value), in case of error.
  */
 void
-Workspace::Servus::initializeMMPS()
+Workspace::Kernel::initializeMMPS()
 {
     this->http->mmps = MMPS::InitPool(1);
     if (this->http->mmps == NULL)
     {
-        ReportError("[Workspace] Cannot create MMPS pool");
+        ReportError("[Kernel] Cannot create MMPS pool");
 
         throw std::runtime_error("MMPS");
     }
@@ -99,7 +99,7 @@ Workspace::Servus::initializeMMPS()
             1000);
     if (rc != 0)
     {
-        ReportError("[Workspace] Cannot create MMPS bank: rc=%d", rc);
+        ReportError("[Kernel] Cannot create MMPS bank: rc=%d", rc);
 
         throw std::runtime_error("MMPS");
     }
@@ -109,7 +109,7 @@ Workspace::Servus::initializeMMPS()
             0);
     if (rc != 0)
     {
-        ReportError("[Workspace] Cannot allocate memory for MMPS bank: rc=%d", rc);
+        ReportError("[Kernel] Cannot allocate memory for MMPS bank: rc=%d", rc);
 
         throw std::runtime_error("MMPS");
     }
@@ -122,7 +122,7 @@ Workspace::Servus::initializeMMPS()
  * @return  Error code (negative value), in case of error.
  */
 void
-Workspace::Servus::kernelInit()
+Workspace::Kernel::kernelInit()
 {
     // Start GKrellM service.
     //
@@ -130,7 +130,7 @@ Workspace::Servus::kernelInit()
         int rc = GKrellM_Start(&this->gkrellm);
         if (rc != 0)
         {
-            ReportError("[Workspace] Cannot start GKrellM service - quit");
+            ReportError("[Kernel] Cannot start GKrellM service - quit");
 
             throw std::runtime_error("Cannot start GKrellM service");
         }
@@ -143,9 +143,9 @@ Workspace::Servus::kernelInit()
         Config config;
         config.readFile("/opt/servus/servus.conf");
 
-        Setting &gpio = config.lookup("GPIO");
+        Setting& gpio = config.lookup("GPIO");
 
-        Setting &relays = gpio.lookup("Relays");
+        Setting& relays = gpio.lookup("Relays");
 
         {
             GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
@@ -154,37 +154,37 @@ Workspace::Servus::kernelInit()
                  relayIndex < relays.getLength();
                  relayIndex++)
             {
-                Setting &relay = relays[relayIndex];
+                Setting& relay = relays[relayIndex];
 
-                const char      *relayName = relay.lookup("Name");
+                const char*     relayName = relay.lookup("Name");
                 unsigned int    pinNumber = relay.lookup("GPIO");
 
                 relayStation += new GPIO::Relay(pinNumber, relayName);
             }
         }
 
-        Setting &therma = gpio.lookup("Therma");
+        Setting& therma = gpio.lookup("Therma");
 
         {
-            Therma::Service &thermaService = Therma::Service::SharedInstance();
+            Therma::Service& thermaService = Therma::Service::SharedInstance();
 
             for (int sensorIndex = 0;
                  sensorIndex < therma.getLength();
                  sensorIndex++)
             {
-                Setting &sensor = therma[sensorIndex];
+                Setting& sensor = therma[sensorIndex];
 
-                const char      *thermaId = sensor.lookup("Id");
-                const char      *thermaName = sensor.lookup("Name");
+                const char*     thermaId = sensor.lookup("Id");
+                const char*     thermaName = sensor.lookup("Name");
                 unsigned int    modbusUnitId = sensor.lookup("MODBUS");
 
                 thermaService += new Therma::Sensor(thermaId, thermaName, modbusUnitId);
             }
         }
     }
-    catch (std::exception &exception)
+    catch (std::exception& exception)
     {
-        ReportWarning("[Workspace] Exception on configuration: %s", exception.what());
+        ReportWarning("[Kernel] Exception on configuration: %s", exception.what());
     }
 
     // Start HTTP service.
@@ -215,7 +215,7 @@ const unsigned int cols[4] = { 16, 17, 18, 19 }; //{ 36, 11, 12, 35 };
  * @return  Error code (negative value), in case of error.
  */
 void
-Workspace::Servus::kernelExec()
+Workspace::Kernel::kernelExec()
 {
 #if 0
     {
@@ -280,11 +280,11 @@ Workspace::Servus::kernelExec()
 
     try
     {
-        GPIO::Strip &stripService = GPIO::Strip::SharedInstance();
+        GPIO::Strip& stripService = GPIO::Strip::SharedInstance();
 
         stripService.startService();
 
-        Therma::Service &thermaService = Therma::Service::SharedInstance();
+        Therma::Service& thermaService = Therma::Service::SharedInstance();
 
         thermaService.startService();
 
@@ -292,7 +292,7 @@ Workspace::Servus::kernelExec()
     }
     catch (...)
     {
-        ReportError("[Workspace] Error has occurred starting services - quit!");
+        ReportError("[Kernel] Error has occurred starting services - quit!");
     }
 }
 
@@ -303,7 +303,7 @@ Workspace::Servus::kernelExec()
  * @return  Error code (negative value), in case of error.
  */
 void
-Workspace::Servus::kernelWait()
+Workspace::Kernel::kernelWait()
 {
     try
     {
@@ -311,7 +311,7 @@ Workspace::Servus::kernelWait()
     }
     catch (...)
     {
-        ReportError("[Workspace] Error has occurred waiting for services - quit!");
+        ReportError("[Kernel] Error has occurred waiting for services - quit!");
     }
 }
 
@@ -322,7 +322,7 @@ Workspace::Servus::kernelWait()
  * @return  Error code (negative value), in case of error.
  */
 void
-Workspace::Servus::kernelDone()
+Workspace::Kernel::kernelDone()
 {
     Toolkit::SetSignalCaptureOff(SIGINT);
     Toolkit::SetSignalCaptureOff(SIGTERM);
@@ -333,7 +333,7 @@ Workspace::Servus::kernelDone()
     }
     catch (...)
     {
-        ReportError("[Workspace] Error has occurred trying to stop services");
+        ReportError("[Kernel] Error has occurred trying to stop services");
     }
 }
 
@@ -347,7 +347,7 @@ Workspace::Servus::kernelDone()
 static void
 OwnSignalHandler(int signalNumber)
 {
-    ReportNotice("[Workspace] Received signal to quit: signal=%d", signalNumber);
+    ReportNotice("[Kernel] Received signal to quit: signal=%d", signalNumber);
 
     // Raise signal again to let it be handled by default signal handler.
     //

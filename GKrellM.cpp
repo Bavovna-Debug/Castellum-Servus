@@ -31,7 +31,7 @@
 // Local definition files.
 //
 #include "Servus/GKrellM.hpp"
-#include "Servus/Workspace.hpp"
+#include "Servus/Kernel.hpp"
 
 static void *
 GKrellM_ThreadHandler(void *);
@@ -549,7 +549,7 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
     struct tm       *tm;
     int             rc;
 
-    Workspace::Servus &workspace = Workspace::Servus::SharedInstance();
+    Workspace::Kernel &kernel = Workspace::Kernel::SharedInstance();
     Therma::Service &thermaService = Therma::Service::SharedInstance();
 
     // 1st step: Wait if any data is suppose to come at all.
@@ -924,7 +924,7 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - workspace.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {
@@ -1186,7 +1186,7 @@ GKrellM_SecondsBell(void *arg)
     struct tm               *tm;
     int                     rc;
 
-    Workspace::Servus &workspace = Workspace::Servus::SharedInstance();
+    Workspace::Kernel &kernel = Workspace::Kernel::SharedInstance();
 
     session = (struct GKrellM_Session *) arg;
 
@@ -1267,7 +1267,7 @@ GKrellM_SecondsBell(void *arg)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - workspace.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {

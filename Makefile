@@ -62,7 +62,7 @@ CPPFLAGS += -Wunused-parameter
 CPPFLAGS += -Wunused-value
 CPPFLAGS += -Wwrite-strings
 
-OBJECTS_ROOT    := GKrellM.o Main.o Workspace.o
+OBJECTS_ROOT    := GKrellM.o Kernel.o Main.o
 OBJECTS_WWW     := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
 OBJECTS_TOOLS  	:= Tools/Debug.o Tools/Memory.o
 
@@ -74,10 +74,10 @@ Servus: $(OBJECTS_ROOT) $(OBJECTS_WWW) $(OBJECTS_TOOLS)
 GKrellM.o: GKrellM.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-Main.o: Main.cpp
+Kernel.o: Kernel.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-Workspace.o: Workspace.cpp
+Main.o: Main.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ****************************************
