@@ -210,84 +210,8 @@ WWW::Site::processRelays(HTTP::Connection &connection, HTML::Instance &instance)
  * @param[in]   instance    Pointer to HTML instance.
  */
 void
-WWW::Site::generateNorth(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
 {
-#if 0
-
-    // This is the right place for kinds of messages.
-    //
-    {
-        if (HTTP_ArgumentPairExists(connection, CHIMAERA_ACTION, CHIMAERA_ACTION_ORBIS_SAVE) == true)
-        {
-            if (WWW::FormSubmitted(connection) == true)
-            {
-                WWW_SaveOrbisOption(connection);
-            }
-        }
-
-        if (WWW_OrbisModified() == true)
-        {
-            HTML::WarningMessage(connection,
-                    "There are options with modified values. Save options in MTA flash before switching off the device. Otherwise, modified values will be lost.");
-        }
-
-        if (connection.upload.requested == true)
-        {
-            if (connection.upload.uploaded == false)
-            {
-                HTML::ErrorMessage(connection, "Cannot upload file");
-            }
-            else
-            {
-                HTML::SuccessMessage(connection, "File has been successfully uploaded");
-
-                switch (connection.upload.fileType)
-                {
-                    case HTTP_UPLOAD_FDASY_MASTER:
-                    case HTTP_UPLOAD_FDASY_SLAVE:
-                    case HTTP_UPLOAD_MDASY_MASTER:
-                    case HTTP_UPLOAD_MDASY_SLAVE:
-                    {
-                        HTML::NoticeMessage(connection, "Uploaded file has been skipped");
-
-                        break;
-                    }
-
-                    case HTTP_UPLOAD_FPGA:
-                    {
-                        if (connection.upload.flashed == false)
-                        {
-                            HTML::ErrorMessage(connection, "Error has occurred trying to copy uploaded file to FPGA");
-                        }
-                        else
-                        {
-                            HTML::SuccessMessage(connection, "Uploaded file has been copied to FPGA");
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            connection.upload.requested = false;
-        }
-    }
-
-#endif
-
-#if 0
-
-    // Process forms.
-    //
-    {
-        if (HTTP_ArgumentPairExists(connection, CHIMAERA_ACTION, CHIMAERA_ACTION_ORBIS_EDIT) == true)
-        {
-            WWW_GenerateOrbisEditForm(connection);
-        }
-    }
-
-#endif
-
     { // HTML.Division
         HTML::Division division(instance, NULL, "tabs");
 
