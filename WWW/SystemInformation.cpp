@@ -17,7 +17,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void
-WWW::Site::generateSystemInformation(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateSystemInformation(HTTP::Connection& connection, HTML::Instance& instance)
 {
     HTML::Division division(instance, "full", "slice");
 

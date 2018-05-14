@@ -28,20 +28,20 @@
  * @param[in]   length  Size of data (in bytes) to dump out.
  */
 void
-Dump(const char *label, void *buffer, unsigned int length)
+Dump(const char* label, void* buffer, unsigned int length)
 {
-    static char     *string = NULL;
-    char            *cursorOverBuffer;
-    char            *cursorOverString;
+    static char*    string = NULL;
+    char*           cursorOverBuffer;
+    char*           cursorOverString;
     unsigned char   c;
     unsigned int    index;
 
     if (string == NULL)
     {
-        string = (char *) malloc(4 * KB);
+        string = (char*) malloc(4 * KB);
     }
 
-    cursorOverBuffer = (char *) buffer;
+    cursorOverBuffer = (char*) buffer;
     cursorOverString = string;
 
     for (index = 0;

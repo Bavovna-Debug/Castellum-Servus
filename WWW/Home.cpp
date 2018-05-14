@@ -50,7 +50,7 @@ using namespace HTML;
  * @param[in]   connection  Pointer to HTTP connection.
  */
 void
-WWW::Site::generateDocument(HTTP::Connection &connection)
+WWW::Site::generateDocument(HTTP::Connection& connection)
 {
     HTML::Instance instance(connection);
 
@@ -161,19 +161,19 @@ WWW::Site::generateDocument(HTTP::Connection &connection)
 }
 
 void
-WWW::Site::processRelays(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    const char  *relayIndex;
-    const char  *relayState;
+    const char* relayIndex;
+    const char* relayState;
 
     relayIndex = connection.argumentByName(WWW::SwitchRelay);
     if (relayIndex != NULL)
     {
-        GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
+        GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
         try
         {
-            GPIO::Relay *relay = relayStation[strtol(relayIndex, NULL, 10)];
+            GPIO::Relay* relay = relayStation[strtol(relayIndex, NULL, 10)];
 
             relayState = connection.argumentByName(WWW::RelayState);
             if (relayState == NULL)
@@ -309,7 +309,7 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
  * @param[in]   instance    Pointer to HTML instance.
  */
 void
-WWW::Site::generateSouth(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateSouth(HTTP::Connection& connection, HTML::Instance& instance)
 {
     if (connection.pageIsEqualTo(WWW::PageNone) == true)
     {

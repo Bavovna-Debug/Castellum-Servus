@@ -66,7 +66,7 @@ Inherited()
         GPIO::LCD::InitInstance(GPIO::LineLength2004);
         Therma::Service::InitInstance();
     }
-    catch (std::exception &exception)
+    catch (std::exception& exception)
     {
         ReportWarning("[Kernel] Exception: %s", exception.what());
     }
@@ -148,7 +148,7 @@ Workspace::Kernel::kernelInit()
         Setting& relays = gpio.lookup("Relays");
 
         {
-            GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
+            GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
             for (int relayIndex = 0;
                  relayIndex < relays.getLength();

@@ -15,6 +15,6 @@
  * @param[in]   length  Size of data (in bytes) to dump out.
  */
 void
-Dump(const char *label, void *buffer, unsigned int length);
+Dump(const char* label, void* buffer, unsigned int length);
 
 #endif

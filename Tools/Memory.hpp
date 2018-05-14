@@ -22,7 +22,7 @@
  * @param[in]   source      Address of source data.
  */
 void
-CopyByte(void *destination, const void *source);
+CopyByte(void* destination, const void* source);
 
 /**
  * @brief   Copy one double-word (4 bytes) virtual memory to virtual memory.
@@ -34,7 +34,7 @@ CopyByte(void *destination, const void *source);
  * @param[in]   source      Address of source data.
  */
 void
-CopyDoubleword(void *destination, const void *source);
+CopyDoubleword(void* destination, const void* source);
 
 /**
  * @brief   Copy one quad-word (8 bytes) virtual memory to virtual memory.
@@ -46,7 +46,7 @@ CopyDoubleword(void *destination, const void *source);
  * @param[in]   source      Address of source data.
  */
 void
-CopyQuadword(void *destination, const void *source);
+CopyQuadword(void* destination, const void* source);
 
 /**
  * @brief   Copy a sequence of double-word values.
@@ -61,7 +61,7 @@ CopyQuadword(void *destination, const void *source);
  * @param[in]   length      Length of data area in bytes.
  */
 void
-CopyDMA(void *destination, const void *source, unsigned int length);
+CopyDMA(void* destination, const void* source, unsigned int length);
 
 /**
  * @brief   Copy a sequence of quad-word values.

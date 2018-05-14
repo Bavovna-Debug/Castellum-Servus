@@ -23,7 +23,7 @@ main(void)
 
         kernel.run();
     }
-    catch (std::exception &exception)
+    catch (std::exception& exception)
     {
         ReportWarning("[Main] Exception: %s", exception.what());
     }

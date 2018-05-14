@@ -18,7 +18,7 @@
  * @param[in]   source      Address of source data.
  */
 inline void
-CopyByte(void *destination, const void *source)
+CopyByte(void* destination, const void* source)
 {
     __asm__ volatile("movsb" : : "S" (source), "D" (destination));
 }
@@ -33,7 +33,7 @@ CopyByte(void *destination, const void *source)
  * @param[in]   source      Address of source data.
  */
 inline void
-CopyDoubleword(void *destination, const void *source)
+CopyDoubleword(void* destination, const void* source)
 {
     __asm__ volatile("movsl" : : "S" (source), "D" (destination));
 }
@@ -48,7 +48,7 @@ CopyDoubleword(void *destination, const void *source)
  * @param[in]   source      Address of source data.
  */
 inline void
-CopyQuadword(void *destination, const void *source)
+CopyQuadword(void* destination, const void* source)
 {
     __asm__ volatile("movsq" : : "S" (source), "D" (destination));
 }
@@ -66,7 +66,7 @@ CopyQuadword(void *destination, const void *source)
  * @param[in]   length      Length of data area in bytes.
  */
 inline void
-CopyDMA(void *destination, const void *source, unsigned int length)
+CopyDMA(void* destination, const void* source, unsigned int length)
 {
     unsigned int numberOfDoubleWords;
 

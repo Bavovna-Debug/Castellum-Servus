@@ -18,7 +18,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void
-WWW::Site::generateTherma(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateTherma(HTTP::Connection& connection, HTML::Instance& instance)
 {
     HTML::Division division(instance, NULL, "workspace");
 
@@ -80,7 +80,7 @@ WWW::Site::generateTherma(HTTP::Connection &connection, HTML::Instance &instance
                 }
             }
 
-            Therma::Service &thermaService = Therma::Service::SharedInstance();
+            Therma::Service& thermaService = Therma::Service::SharedInstance();
 
             {
                 HTML::TableBody tableBody(instance);
@@ -89,7 +89,7 @@ WWW::Site::generateTherma(HTTP::Connection &connection, HTML::Instance &instance
                      sensorIndex < thermaService.size();
                      sensorIndex++)
                 {
-                    Therma::Sensor *sensor = thermaService[sensorIndex];
+                    Therma::Sensor* sensor = thermaService[sensorIndex];
 
                     HTML::TableRow tableRow(instance);
 

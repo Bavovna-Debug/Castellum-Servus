@@ -34,17 +34,17 @@ namespace WWW
     {
     public:
         void
-        generateDocument(HTTP::Connection &);
+        generateDocument(HTTP::Connection&);
 
     private:
         void
-        processRelays(HTTP::Connection &, HTML::Instance &);
+        processRelays(HTTP::Connection&, HTML::Instance&);
 
         void
-        generateNorth(HTTP::Connection &, HTML::Instance &);
+        generateNorth(HTTP::Connection&, HTML::Instance&);
 
         void
-        generateSouth(HTTP::Connection &, HTML::Instance &);
+        generateSouth(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'System Information' tab.
@@ -53,7 +53,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateSystemInformation(HTTP::Connection &, HTML::Instance &);
+        generateSystemInformation(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Therma' tab.
@@ -62,7 +62,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateTherma(HTTP::Connection &, HTML::Instance &);
+        generateTherma(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Relay' tab.
@@ -71,7 +71,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateRelay(HTTP::Connection &, HTML::Instance &);
+        generateRelay(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Check whether some HTML form has been submitted by user.
@@ -82,7 +82,7 @@ namespace WWW
          * @return  Boolean false if current HTTP request is regular request without any submit.
          */
         static bool
-        FormSubmitted(HTTP::Connection &connection);
+        FormSubmitted(HTTP::Connection& connection);
 
         /**
          * @brief   Check whether HTML form has been cancelled by user.

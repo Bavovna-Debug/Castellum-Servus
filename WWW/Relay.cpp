@@ -16,7 +16,7 @@
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateRelay(HTTP::Connection& connection, HTML::Instance& instance)
 {
     HTML::Division division(instance, NULL, "workspace");
 
@@ -64,7 +64,7 @@ WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
                 }
             }
 
-            GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
+            GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
             {
                 HTML::TableBody tableBody(instance);
@@ -73,7 +73,7 @@ WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
                      relayIndex < relayStation.size();
                      relayIndex++)
                 {
-                    GPIO::Relay *relay = relayStation[relayIndex];
+                    GPIO::Relay* relay = relayStation[relayIndex];
 
                     HTML::TableRow tableRow(instance);
 
