@@ -342,7 +342,7 @@ WWW::Site::generateSouth(HTTP::Connection &connection, HTML::Instance &instance)
  * @return  Boolean false if current HTTP request is regular request without any submit.
  */
 bool
-WWW::FormSubmitted(HTTP::Connection &connection)
+WWW::Site::FormSubmitted(HTTP::Connection& connection)
 {
     return connection.argumentPairExists(WWW::Button, WWW::ButtonSubmit);
 }
@@ -356,7 +356,7 @@ WWW::FormSubmitted(HTTP::Connection &connection)
  * @return  Boolean false if a form has not been cancelled by user.
  */
 bool
-WWW::FormCancelled(HTTP::Connection &connection)
+WWW::Site::FormCancelled(HTTP::Connection& connection)
 {
     return connection.argumentPairExists(WWW::Button, WWW::ButtonCancel);
 }

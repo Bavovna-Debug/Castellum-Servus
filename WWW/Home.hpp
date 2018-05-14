@@ -72,27 +72,27 @@ namespace WWW
          */
         void
         generateRelay(HTTP::Connection &, HTML::Instance &);
+
+        /**
+         * @brief   Check whether some HTML form has been submitted by user.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         *
+         * @return  Boolean true if a form has been submitted by user.
+         * @return  Boolean false if current HTTP request is regular request without any submit.
+         */
+        static bool
+        FormSubmitted(HTTP::Connection &connection);
+
+        /**
+         * @brief   Check whether HTML form has been cancelled by user.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         *
+         * @return  Boolean true if a form has been cancelled by user.
+         * @return  Boolean false if a form has not been cancelled by user.
+         */
+        static bool
+        FormCancelled(HTTP::Connection& connection);
     };
-
-    /**
-     * @brief   Check whether some HTML form has been submitted by user.
-     *
-     * @param[in]   connection  Pointer to HTTP connection.
-     *
-     * @return  Boolean true if a form has been submitted by user.
-     * @return  Boolean false if current HTTP request is regular request without any submit.
-     */
-    bool
-    FormSubmitted(HTTP::Connection &connection);
-
-    /**
-     * @brief   Check whether HTML form has been cancelled by user.
-     *
-     * @param[in]   connection  Pointer to HTTP connection.
-     *
-     * @return  Boolean true if a form has been cancelled by user.
-     * @return  Boolean false if a form has not been cancelled by user.
-     */
-    bool
-    FormCancelled(HTTP::Connection &connection);
 };
