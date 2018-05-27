@@ -64,7 +64,6 @@ CPPFLAGS += -Wwrite-strings
 
 OBJECTS_ROOT    := GKrellM.o Kernel.o Main.o
 OBJECTS_WWW     := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
-OBJECTS_TOOLS  	:= Tools/Debug.o Tools/Memory.o
 
 # ******************************************************************************
 
@@ -72,7 +71,7 @@ all: Servus
 
 # ******************************************************************************
 
-Servus: $(OBJECTS_ROOT) $(OBJECTS_WWW) $(OBJECTS_TOOLS)
+Servus: $(OBJECTS_ROOT) $(OBJECTS_WWW)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
 
 GKrellM.o: GKrellM.cpp
@@ -96,14 +95,6 @@ WWW/SystemInformation.o: WWW/SystemInformation.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/Therma.o: WWW/Therma.cpp
-	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
-
-# ******************************************************************************
-
-Tools/Debug.o: Tools/Debug.cpp
-	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
-
-Tools/Memory.o: Tools/Memory.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************
