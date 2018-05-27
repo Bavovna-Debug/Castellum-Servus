@@ -1,9 +1,5 @@
 #!/bin/bash
 #
-# chkconfig: 35 90 12
-# description: Servus
-#
-
 ### BEGIN INIT INFO
 # Provides:             servus
 # Required-Start:       $syslog
@@ -53,14 +49,14 @@ already_running()
 #
 start()
 {
-    log_daemon_msg "Starting servus" "servus"
+    log_daemon_msg "Starting Servus" "servus"
 
     already_running
     if [ $RUNNING == 1 ]; then
         log_progress_msg "already running"
         log_end_msg 0
     else
-        /opt/servus/servus
+        /opt/castellum/servus
 
         log_progress_msg "started"
         log_end_msg 0
@@ -71,7 +67,7 @@ start()
 #
 stop()
 {
-    log_daemon_msg "Stopping servus" "servus"
+    log_daemon_msg "Stopping Servus" "servus"
 
     already_running
     if [ $RUNNING == 1 ]; then
