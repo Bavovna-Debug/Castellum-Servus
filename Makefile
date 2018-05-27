@@ -13,27 +13,25 @@ INCLUDES += -I ../
 LIBS += -L../Communicator/
 LIBS += -L../GPIO/
 LIBS += -L../HTTP/
-LIBS += -L../MMPS/
 LIBS += -L../MODBUS/
-LIBS += -L../Signals/
+LIBS += -L../RTSP/
 LIBS += -L../Toolkit/
 
 LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lMODBUS
+LIBS += -lRTSP
 LIBS += -lSignals
 LIBS += -lToolkit
 LIBS += -lCommunicator
 LIBS += -pthread
 LIBS += -lconfig++
-LIBS += -lbz2
-LIBS += -lm
 LIBS += -lrt
 LIBS += -lwiringPi
 LIBS += -lwiringPiDev
 
-CFLAGS := -O2
+CFLAGS += -O2
 CFLAGS += -std=c99
 CFLAGS += -Wall
 CFLAGS += -Wextra
@@ -49,8 +47,8 @@ CFLAGS += -Wunused-parameter
 CFLAGS += -Wunused-value
 CFLAGS += -Wwrite-strings
 
-CPPFLAGS := -O2
-CPPFLAGS += -std=c++11
+CPPFLAGS += -O2
+CPPFLAGS += -std=c++14
 CPPFLAGS += -Wall
 CPPFLAGS += -Wextra
 CPPFLAGS += -Wdeprecated-declarations
@@ -62,17 +60,22 @@ CPPFLAGS += -Wunused-parameter
 CPPFLAGS += -Wunused-value
 CPPFLAGS += -Wwrite-strings
 
-OBJECTS_ROOT    := GKrellM.o Kernel.o Main.o
-OBJECTS_WWW     := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
-
 # ******************************************************************************
+
+OBJECTS_ROOT          := Configuration.o GKrellM.o Kernel.o Main.o Parse.o
+OBJECTS_DISPATCHER    := Dispatcher/Aviso.o Dispatcher/Communicator.o Dispatcher/Queue.o
+OBJECTS_FABULATORIUM  := Fabulatorium/Fabulator.o Fabulatorium/Listener.o Fabulatorium/Session.o
+OBJECTS_WWW           := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Servus
 
+Servus: $(OBJECTS_ROOT) $(OBJECTS_FABULATORIUM) $(OBJECTS_DISPATCHER) $(OBJECTS_WWW)
+	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
+
 # ******************************************************************************
 
-Servus: $(OBJECTS_ROOT) $(OBJECTS_WWW)
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
+Configuration.o: Configuration.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 GKrellM.o: GKrellM.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
@@ -81,6 +84,31 @@ Kernel.o: Kernel.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Main.o: Main.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Parse.o: Parse.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+# ******************************************************************************
+
+Dispatcher/Aviso.o: Dispatcher/Aviso.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Dispatcher/Communicator.o: Dispatcher/Communicator.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Dispatcher/Queue.o: Dispatcher/Queue.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+# ******************************************************************************
+
+Fabulatorium/Fabulator.o: Fabulatorium/Fabulator.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Fabulatorium/Listener.o: Fabulatorium/Listener.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Fabulatorium/Session.o: Fabulatorium/Session.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************
@@ -101,19 +129,16 @@ WWW/Therma.o: WWW/Therma.cpp
 
 install:
 	sudo install --owner=root --group=root --mode=0755 Servus.rc /etc/init.d/servus
-	sudo install --owner=root --group=root --mode=0755 --directory /opt/servus/
-	sudo install --owner=root --group=root --mode=0755 --preserve-timestamps --strip Servus /opt/servus/servus
+	sudo install --owner=root --group=root --mode=0755 --directory /opt/castellum/
+	sudo install --owner=root --group=root --mode=0755 --preserve-timestamps --strip Servus /opt/castellum/servus
 
-setup-erdbeere:
-	sudo install --owner=root --group=root --mode=0644 --preserve-timestamps Setup/Erdbeere.conf /opt/servus/servus.conf
-
-setup-himbeere:
-	sudo install --owner=root --group=root --mode=0644 --preserve-timestamps Setup/Himbeere.conf /opt/servus/servus.conf
+setup:
+	sudo install --owner=root --group=root --mode=0644 --preserve-timestamps Default.conf /opt/castellum/servus.conf
 
 clean:
 	rm -fv Servus
 	find . -type f -name "*.o" | xargs rm -fv *.o
 
 run:
-	killall --quiet --wait servus | echo "Stopped"
-	/opt/servus/servus | echo "Started"
+	sudo killall --quiet --wait servus | echo "Stopped"
+	sudo /opt/castellum/servus | echo "Started"
