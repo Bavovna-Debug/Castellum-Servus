@@ -924,7 +924,7 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart->seconds()) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {
@@ -1267,7 +1267,7 @@ GKrellM_SecondsBell(void* arg)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart->seconds()) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {

@@ -18,9 +18,9 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void
-WWW::Site::generateTherma(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, NULL, "workspace");
+    HTML::Division division(instance, HTML::Nothing, "workspace");
 
     division.meta("refresh", "10");
 
@@ -49,31 +49,31 @@ WWW::Site::generateTherma(HTTP::Connection& connection, HTML::Instance& instance
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Tief");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Delta");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Aktuell");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Delta");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Hoch");
                     }
@@ -94,41 +94,41 @@ WWW::Site::generateTherma(HTTP::Connection& connection, HTML::Instance& instance
                     HTML::TableRow tableRow(instance);
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
                         tableDataCell.plain(sensor->name);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "blue");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("%4.2f &#x2103;",
                                 sensor->temperature.lowest);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "blue");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("[-%4.2f &#x2103;]",
                                 sensor->temperature.current - sensor->temperature.lowest);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "green");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
 
                         tableDataCell.plain("%4.2f &#x2103;",
                                 sensor->temperature.current);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "red");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("[+%4.2f &#x2103;]",
                                 sensor->temperature.highest - sensor->temperature.current);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "red");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("%4.2f &#x2103;",
                                 sensor->temperature.highest);

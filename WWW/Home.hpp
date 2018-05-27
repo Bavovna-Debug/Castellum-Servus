@@ -12,23 +12,23 @@
 
 namespace WWW
 {
-    const char PageNone[]               = "";
-    const char PageSystemInformation[]  = "sysinfo";
-    const char PageTherma[]             = "therma";
-    const char PageRelay[]              = "relay";
+    static const std::string PageSystemInformation      = "sysinfo";
+    static const std::string PageTherma                 = "therma";
+    static const std::string PageRelay                  = "relay";
 
-    const char Download[]               = "download";
-    const char DownloadSubject[]        = "subject";
-    const char DownloadSubjectAjax[]    = "ajax.js";
+    static const std::string Images                     = "img";
+    static const std::string Download                   = "download";
+    static const std::string DownloadSubject            = "subject";
+    static const std::string DownloadSubjectAjax        = "ajax.js";
 
-    const char SwitchRelay[]            = "switch_relay";
-    const char RelayState[]             = "relay_state";
-    const char RelayStateDown[]         = "down";
-    const char RelayStateUp[]           = "up";
+    static const std::string SwitchRelay                = "switch_relay";
+    static const std::string RelayState                 = "relay_state";
+    static const std::string RelayStateDown             = "down";
+    static const std::string RelayStateUp               = "up";
 
-    const char Button[]                 = "button";
-    const char ButtonSubmit[]           = "submit";
-    const char ButtonCancel[]           = "cancel";
+    static const std::string Button                     = "button";
+    static const std::string ButtonSubmit               = "submit";
+    static const std::string ButtonCancel               = "cancel";
 
     class Site : public HTTP::Site
     {
@@ -53,7 +53,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateSystemInformation(HTTP::Connection&, HTML::Instance&);
+        pageSystemInformation(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Therma' tab.
@@ -62,7 +62,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateTherma(HTTP::Connection&, HTML::Instance&);
+        pageTherma(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Relay' tab.
@@ -71,7 +71,7 @@ namespace WWW
          * @param   instance        HTML instance.
          */
         void
-        generateRelay(HTTP::Connection&, HTML::Instance&);
+        pageRelay(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Check whether some HTML form has been submitted by user.
@@ -81,8 +81,8 @@ namespace WWW
          * @return  Boolean true if a form has been submitted by user.
          * @return  Boolean false if current HTTP request is regular request without any submit.
          */
-        static bool
-        FormSubmitted(HTTP::Connection& connection);
+        bool
+        formSubmitted(HTTP::Connection&);
 
         /**
          * @brief   Check whether HTML form has been cancelled by user.
@@ -92,7 +92,7 @@ namespace WWW
          * @return  Boolean true if a form has been cancelled by user.
          * @return  Boolean false if a form has not been cancelled by user.
          */
-        static bool
-        FormCancelled(HTTP::Connection& connection);
+        bool
+        formCancelled(HTTP::Connection&);
     };
 };
