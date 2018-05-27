@@ -1,8 +1,6 @@
 // System definition files.
 //
 #include <unistd.h>
-#include <libconfig.h++>
-#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -18,18 +16,18 @@
 #include "GPIO/Therma.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
-#include "Toolkit/MMPS.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Signals.hpp"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
 #include "Servus/Configuration.hpp"
 #include "Servus/GKrellM.hpp"
 #include "Servus/Kernel.hpp"
+#include "Servus/Dispatcher/Communicator.hpp"
+#include "Servus/Dispatcher/Queue.hpp"
 #include "Servus/WWW/Home.hpp"
-
-using namespace libconfig;
 
 static void
 OwnSignalHandler(int signalNumber);
@@ -40,7 +38,7 @@ Workspace::Kernel&
 Workspace::Kernel::InitInstance()
 {
     if (instance != NULL)
-        throw std::runtime_error("Workspace already initialized");
+        throw std::runtime_error("Kernel already initialized");
 
     instance = new Workspace::Kernel();
 
@@ -51,7 +49,7 @@ Workspace::Kernel&
 Workspace::Kernel::SharedInstance()
 {
     if (instance == NULL)
-        throw std::runtime_error("Workspace not initialized");
+        throw std::runtime_error("Kernel not initialized");
 
     return *instance;
 }
@@ -59,60 +57,7 @@ Workspace::Kernel::SharedInstance()
 Workspace::Kernel::Kernel() :
 Inherited()
 {
-    try
-    {
-        GPIO::RelayStation::InitInstance();
-        GPIO::Strip::InitInstance();
-        GPIO::LCD::InitInstance(GPIO::LineLength2004);
-        Therma::Service::InitInstance();
-    }
-    catch (std::exception& exception)
-    {
-        ReportWarning("[Kernel] Exception: %s", exception.what());
-    }
-}
-
-/**
- * @brief   Initialize MMPS pools.
- *
- * @return  0 upon successful completion.
- * @return  Error code (negative value), in case of error.
- */
-void
-Workspace::Kernel::initializeMMPS()
-{
-    this->http->mmps = MMPS::InitPool(1);
-    if (this->http->mmps == NULL)
-    {
-        ReportError("[Kernel] Cannot create MMPS pool");
-
-        throw std::runtime_error("MMPS");
-    }
-
-    int rc;
-
-    rc = MMPS::InitBank(
-            this->http->mmps,
-            0,
-            1024,
-            0,
-            1000);
-    if (rc != 0)
-    {
-        ReportError("[Kernel] Cannot create MMPS bank: rc=%d", rc);
-
-        throw std::runtime_error("MMPS");
-    }
-
-    rc = MMPS::AllocateImmediately(
-            this->http->mmps,
-            0);
-    if (rc != 0)
-    {
-        ReportError("[Kernel] Cannot allocate memory for MMPS bank: rc=%d", rc);
-
-        throw std::runtime_error("MMPS");
-    }
+    this->timestampOfStart = new Toolkit::Timestamp();
 }
 
 /**
@@ -124,82 +69,61 @@ Workspace::Kernel::initializeMMPS()
 void
 Workspace::Kernel::kernelInit()
 {
-    // Start GKrellM service.
-    //
+    int rc = GKrellM_Start(&this->gkrellm);
+    if (rc != 0)
     {
-        int rc = GKrellM_Start(&this->gkrellm);
-        if (rc != 0)
-        {
-            ReportError("[Kernel] Cannot start GKrellM service - quit");
+        ReportError("[Kernel] Cannot start GKrellM service - quit");
 
-            throw std::runtime_error("Cannot start GKrellM service");
-        }
+        throw std::runtime_error("Cannot start GKrellM service");
     }
-
-    this->modbus = new MODBUS::Service(Configuration::MODBUSPortNumber);
 
     try
     {
-        Config config;
-        config.readFile("/opt/servus/servus.conf");
-
-        Setting& gpio = config.lookup("GPIO");
-
-        Setting& relays = gpio.lookup("Relays");
-
-        {
-            GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
-
-            for (int relayIndex = 0;
-                 relayIndex < relays.getLength();
-                 relayIndex++)
-            {
-                Setting& relay = relays[relayIndex];
-
-                const char*     relayName = relay.lookup("Name");
-                unsigned int    pinNumber = relay.lookup("GPIO");
-
-                relayStation += new GPIO::Relay(pinNumber, relayName);
-            }
-        }
-
-        Setting& therma = gpio.lookup("Therma");
-
-        {
-            Therma::Service& thermaService = Therma::Service::SharedInstance();
-
-            for (int sensorIndex = 0;
-                 sensorIndex < therma.getLength();
-                 sensorIndex++)
-            {
-                Setting& sensor = therma[sensorIndex];
-
-                const char*     thermaId = sensor.lookup("Id");
-                const char*     thermaName = sensor.lookup("Name");
-                unsigned int    modbusUnitId = sensor.lookup("MODBUS");
-
-                thermaService += new Therma::Sensor(thermaId, thermaName, modbusUnitId);
-            }
-        }
+        GPIO::RelayStation::InitInstance();
+        GPIO::Strip::InitInstance();
+        GPIO::LCD::InitInstance(GPIO::LineLength2004);
+        Therma::Service::InitInstance();
     }
     catch (std::exception& exception)
     {
-        ReportWarning("[Kernel] Exception on configuration: %s", exception.what());
+        ReportWarning("[Kernel] Exception: %s", exception.what());
     }
+
+    try
+    {
+        Servus::Configuration::InitInstance("/opt/castellum/servus.conf");
+        Dispatcher::Communicator::InitInstance();
+        Dispatcher::Queue::InitInstance();
+    }
+    catch (std::exception& exception)
+    {
+        ReportWarning("[Workspace] Exception: %s", exception.what());
+    }
+
+    Servus::Configuration& configuration = Servus::Configuration::SharedInstance();
+
+    configuration.load();
+
+    this->modbus = new MODBUS::Service(configuration.modbusPortNumber);
 
     // Start HTTP service.
     //
-    {
-        this->http = new HTTP::Service(new WWW::Site(),
-                IP::IPv4,
-                "",
-                9000,
-                0x9000,
-                0xAA00,
-                0xDEADBEEF);
+    this->http = new HTTP::Service(new WWW::Site(),
+            IP::IPv4,
+            "",
+            configuration.httpPortNumber,
+            0x9000,
+            0xAA00,
+            this->timestampOfStart->seconds());
 
-        this->initializeMMPS();
-    }
+#if 0
+    Servus::Service* fabulatorium = new Servus::Service(
+        "Fabulatorium",
+        Communicator::IPv4,
+        configuration.fabulatoriumPortNumber);
+
+    fabulatorium->startService();
+#endif
 
     Toolkit::SetSignalCaptureOn(SIGINT, OwnSignalHandler);
     Toolkit::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);
@@ -288,11 +212,14 @@ Workspace::Kernel::kernelExec()
 
         thermaService.startService();
 
+        Dispatcher::Communicator& communicator = Dispatcher::Communicator::SharedInstance();
+        communicator.start();
+
         this->http->startService();
     }
     catch (...)
     {
-        ReportError("[Kernel] Error has occurred starting services - quit!");
+        ReportError("[Workspace] Error has occurred starting services");
     }
 }
 
@@ -311,7 +238,7 @@ Workspace::Kernel::kernelWait()
     }
     catch (...)
     {
-        ReportError("[Kernel] Error has occurred waiting for services - quit!");
+        ReportError("[Workspace] Error has occurred waiting for services");
     }
 }
 
@@ -333,7 +260,7 @@ Workspace::Kernel::kernelDone()
     }
     catch (...)
     {
-        ReportError("[Kernel] Error has occurred trying to stop services");
+        ReportError("[Workspace] Error has occurred trying to stop services");
     }
 }
 
@@ -347,7 +274,7 @@ Workspace::Kernel::kernelDone()
 static void
 OwnSignalHandler(int signalNumber)
 {
-    ReportNotice("[Kernel] Received signal to quit: signal=%d", signalNumber);
+    ReportNotice("[Workspace] Received signal to quit: signal=%d", signalNumber);
 
     // Raise signal again to let it be handled by default signal handler.
     //

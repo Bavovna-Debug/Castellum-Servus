@@ -5,8 +5,8 @@
 #include "GPIO/Therma.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
-#include "Toolkit/MMPS.hpp"
 #include "Toolkit/Workspace.hpp"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
@@ -14,6 +14,8 @@
 
 namespace Workspace
 {
+    static const std::string RootPath = "/opt/castellum/";
+
     class Kernel : public Application
     {
         typedef Application Inherited;
@@ -23,7 +25,7 @@ namespace Workspace
          * UNIX version 6 timestamp representing the time the Servus has been started
          * (in seconds since 1970-01-01 00:00:00 GMT).
          */
-        unsigned long           timestampOfStart;
+        Toolkit::Timestamp*     timestampOfStart;
 
         struct GKrellM_Service  gkrellm;
         MODBUS::Service*        modbus;
@@ -37,10 +39,6 @@ namespace Workspace
         SharedInstance();
 
         Kernel();
-
-    public:
-        void
-        initializeMMPS();
 
     protected:
         void

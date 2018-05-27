@@ -17,9 +17,9 @@ main(void)
     {
         Workspace::Kernel& kernel = Workspace::Kernel::InitInstance();
 
-        kernel.activateSysLog(Workspace::Daemon, Workspace::Debug, "servus");
+        kernel.activateSysLog(Workspace::Local0, Workspace::Debug, "servus");
 
-        kernel.daemonize("/opt/servus/");
+        kernel.daemonize(Workspace::RootPath);
 
         kernel.run();
     }
