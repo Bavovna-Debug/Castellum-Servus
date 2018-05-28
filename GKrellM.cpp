@@ -23,7 +23,6 @@
 
 // Common definition files.
 //
-#include "GPIO/Therma.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 #include "Toolkit/Types.h"
@@ -32,6 +31,8 @@
 //
 #include "Servus/GKrellM.hpp"
 #include "Servus/Kernel.hpp"
+#include "Servus/Peripherique/ThermiqueSensor.hpp"
+#include "Servus/Peripherique/ThermiqueStation.hpp"
 
 static void*
 GKrellM_ThreadHandler(void*);
@@ -550,7 +551,7 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
     int             rc;
 
     Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
-    Therma::Service& thermaService = Therma::Service::SharedInstance();
+    Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
     // 1st step: Wait if any data is suppose to come at all.
     // Quit the thread if nothing happens on a line.
@@ -709,16 +710,16 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
 
 
             for (unsigned int sensorIndex = 0;
-                 sensorIndex < thermaService.size();
+                 sensorIndex < thermiqueStation.size();
                  sensorIndex++)
             {
-                Therma::Sensor* sensor = thermaService[sensorIndex];
+                Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
                 sprintf(session->buffer,
                         "%u \"%s\" 0 0 0 0.0 0.0 \"NONE\" \"%s\" 0\n",
                         GKRELLM_SENSOR_TEMPERATURE,
-                        sensor->deviceId,
-                        sensor->name);
+                        thermiqueSensor->deviceId.c_str(),
+                        thermiqueSensor->name.c_str());
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {
@@ -944,16 +945,16 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
             }
 
             for (unsigned int sensorIndex = 0;
-                 sensorIndex < thermaService.size();
+                 sensorIndex < thermiqueStation.size();
                  sensorIndex++)
             {
-                Therma::Sensor* sensor = thermaService[sensorIndex];
+                Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
                 sprintf(session->buffer,
                         "%u \"%s\" 0 0 0 %.3f\n",
                         GKRELLM_SENSOR_TEMPERATURE,
-                        sensor->deviceId,
-                        sensor->temperature.current);
+                        thermiqueSensor->deviceId.c_str(),
+                        thermiqueSensor->lastKnown.current);
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {
@@ -1305,7 +1306,7 @@ GKrellM_UpdaterBell(void* arg)
 
     session = (struct GKrellM_Session*) arg;
 
-    Therma::Service& thermaService = Therma::Service::SharedInstance();
+    Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
     rc = pthread_mutex_trylock(&session->transmission.mutex);
     if (rc != 0)
@@ -1337,16 +1338,16 @@ GKrellM_UpdaterBell(void* arg)
         }
 
         for (unsigned int sensorIndex = 0;
-             sensorIndex < thermaService.size();
+             sensorIndex < thermiqueStation.size();
              sensorIndex++)
         {
-            Therma::Sensor* sensor = thermaService[sensorIndex];
+            Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
             sprintf(session->buffer,
                     "%u \"%s\" 0 0 0 %.3f\n",
                     GKRELLM_SENSOR_TEMPERATURE,
-                    sensor->deviceId,
-                    sensor->temperature.current);
+                    thermiqueSensor->deviceId.c_str(),
+                    thermiqueSensor->lastKnown.current);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {

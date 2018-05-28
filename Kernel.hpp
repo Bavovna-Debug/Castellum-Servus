@@ -2,7 +2,6 @@
 
 // Common definition files.
 //
-#include "GPIO/Therma.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
 #include "Toolkit/Workspace.hpp"
