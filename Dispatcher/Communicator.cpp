@@ -5,6 +5,7 @@
 #include <cstdbool>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -22,6 +23,7 @@
 #include "Servus/Dispatcher/Aviso.hpp"
 #include "Servus/Dispatcher/Communicator.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
+#include "Servus/Dispatcher/Setup.hpp"
 
 static Dispatcher::Communicator* instance = NULL;
 
@@ -47,6 +49,8 @@ Dispatcher::Communicator::SharedInstance()
 
 Dispatcher::Communicator::Communicator()
 {
+    this->setupDone = false;
+
     this->primus.sleepIfRejectedByPrimus =
             Servus::DefaultPrimusSleepIfRejectedByPrimus;
 
@@ -222,12 +226,6 @@ Dispatcher::Communicator::HandleSession(
         expectedCSeq++;
     }
 
-    // Manage an endless loop of:
-    //   - Authenticate.
-    //   - Send Avisos once there are some in a queue.
-    //   - Send Neutrinos if there are no Avisos for a predifined period of time.
-    //
-    for (;;)
     {
         response.reset();
 
@@ -314,6 +312,215 @@ Dispatcher::Communicator::HandleSession(
         if (response.statusCode == RTSP::Forbidden)
         {
             throw Dispatcher::RejectedByPrimus("Rejected by Primus (Servus disabled)");
+        }
+
+        if (response.statusCode != RTSP::OK)
+        {
+            throw Dispatcher::Exception("Received unexpected response for authentication");
+        }
+    }
+
+    if (communicator->setupDone == false)
+    {
+        {
+            request.reset();
+
+            request["CSeq"] = expectedCSeq;
+            request["Agent"] = Servus::SoftwareVersion;
+            request.generateRequest("SETUP", "rtsp://primus");
+
+            try
+            {
+                ::Communicator::Send(
+                        connection.socket(),
+                        request.payloadBuffer,
+                        request.payloadLength);
+            }
+            catch (std::exception& exception)
+            {
+                throw exception;
+            }
+
+            expectedCSeq++;
+        }
+
+        {
+            response.reset();
+
+            try
+            {
+                ::Communicator::Poll(
+                        connection.socket(),
+                        communicator->primus.waitForResponse);
+            }
+            catch (::Communicator::PollError& exception)
+            {
+                throw Dispatcher::Exception("Keep-alive polling did break",
+                        exception.errorNumber);
+            }
+            catch (::Communicator::PollTimeout&)
+            {
+                throw Dispatcher::Exception("Session timed out");
+            }
+
+            // Receive datagram chunks continuously until either complete datagram is received
+            // or timeout ocures.
+            //
+            for (;;)
+            {
+                unsigned int receivedBytes;
+
+                try
+                {
+                    receivedBytes = ::Communicator::Receive(
+                            connection.socket(),
+                            communicator->receiveBuffer,
+                            Dispatcher::MaximalMessageLength);
+                }
+                catch (::Communicator::TransmissionError& exception)
+                {
+                    throw Dispatcher::Exception("Connection is broken",
+                            exception.errorNumber);
+                }
+                catch (::Communicator::NothingReceived&)
+                {
+                    throw Dispatcher::Exception("Nothing received");
+                }
+
+                try
+                {
+                    response.push(communicator->receiveBuffer, receivedBytes);
+                }
+                catch (std::exception& exception)
+                {
+                    ReportWarning("[Dispatcher] Exception: %s",
+                            exception.what());
+
+                    break;
+                }
+
+                if (response.headerComplete == true)
+                    break;
+
+                // Wait until next chunk of datagram is available.
+                // Cancel session in case of timeout.
+                //
+                try
+                {
+                    ::Communicator::Poll(
+                            connection.socket(),
+                            communicator->primus.waitForDatagramCompletion);
+                }
+                catch (::Communicator::PollError& exception)
+                {
+                    throw Dispatcher::Exception("Poll for chunk did break",
+                            exception.errorNumber);
+                }
+                catch (::Communicator::PollTimeout&)
+                {
+                    throw Dispatcher::Exception("Poll for chunk timed out");
+                }
+            }
+
+            if (response.statusCode != RTSP::OK)
+            {
+                throw Dispatcher::Exception("Received unexpected response for configuration");
+            }
+
+            Dispatcher::ProcessConfigurationJSON(response.content);
+        }
+
+        communicator->setupDone = true;
+    }
+
+    {
+        request.reset();
+
+        request["CSeq"] = expectedCSeq;
+        request["Agent"] = Servus::SoftwareVersion;
+        request.generateRequest("PLAY", "rtsp://primus");
+
+        try
+        {
+            ::Communicator::Send(
+                    connection.socket(),
+                    request.payloadBuffer,
+                    request.payloadLength);
+        }
+        catch (std::exception& exception)
+        {
+            throw exception;
+        }
+
+        expectedCSeq++;
+    }
+
+    // Manage an endless loop of:
+    //   - Authenticate.
+    //   - Send Avisos once there are some in a queue.
+    //   - Send Neutrinos if there are no Avisos for a predifined period of time.
+    //
+    for (;;)
+    {
+        response.reset();
+
+        // Receive datagram chunks continuously until either complete datagram is received
+        // or timeout ocures.
+        //
+        for (;;)
+        {
+            unsigned int receivedBytes;
+
+            try
+            {
+                receivedBytes = ::Communicator::Receive(
+                        connection.socket(),
+                        communicator->receiveBuffer,
+                        Dispatcher::MaximalMessageLength);
+            }
+            catch (::Communicator::TransmissionError& exception)
+            {
+                throw Dispatcher::Exception("Connection is broken",
+                        exception.errorNumber);
+            }
+            catch (::Communicator::NothingReceived&)
+            {
+                throw Dispatcher::Exception("Nothing received");
+            }
+
+            try
+            {
+                response.push(communicator->receiveBuffer, receivedBytes);
+            }
+            catch (std::exception& exception)
+            {
+                ReportWarning("[Dispatcher] Exception: %s",
+                        exception.what());
+
+                break;
+            }
+
+            if (response.headerComplete == true)
+                break;
+
+            // Wait until next chunk of datagram is available.
+            // Cancel session in case of timeout.
+            //
+            try
+            {
+                ::Communicator::Poll(
+                        connection.socket(),
+                        communicator->primus.waitForDatagramCompletion);
+            }
+            catch (::Communicator::PollError& exception)
+            {
+                throw Dispatcher::Exception("Poll for chunk did break",
+                        exception.errorNumber);
+            }
+            catch (::Communicator::PollTimeout&)
+            {
+                throw Dispatcher::Exception("Poll for chunk timed out");
+            }
         }
 
         if (response.statusCode == RTSP::Created)
