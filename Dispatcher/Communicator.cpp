@@ -384,13 +384,13 @@ Dispatcher::Communicator::HandleSession(
             {
                 try
                 {
-                    Dispatcher::Aviso& aviso = queue.fetchFirstAviso();
+                    Dispatcher::Aviso* aviso = queue.fetchFirstAviso();
 
                     request.reset();
                     request["CSeq"] = expectedCSeq;
                     request["Agent"] = Servus::SoftwareVersion;
-                    aviso.prepare(request);
-                    request.generateRequest("AVISO", "rtsp://primus");
+                    aviso->prepare(request);
+                    request.generateRequest(aviso->avisoType, "rtsp://primus");
 
                     try
                     {

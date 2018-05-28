@@ -20,7 +20,7 @@ namespace Dispatcher
     private:
         struct
         {
-            std::queue<Aviso>       avisos;
+            std::queue<Dispatcher::Aviso*> avisos;
             std::mutex              lock;
             std::condition_variable condition;
         }
@@ -46,12 +46,12 @@ namespace Dispatcher
         pendingAvisos();
 
         void
-        enqueueAviso(Dispatcher::Aviso&);
+        enqueueAviso(Dispatcher::Aviso*);
 
         void
         dequeueAviso(const unsigned int avisoId);
 
-        Dispatcher::Aviso&
+        Dispatcher::Aviso*
         fetchFirstAviso();
     };
 

@@ -84,7 +84,7 @@ Dispatcher::Queue::pendingAvisos()
 }
 
 void
-Dispatcher::Queue::enqueueAviso(Dispatcher::Aviso& aviso)
+Dispatcher::Queue::enqueueAviso(Dispatcher::Aviso* aviso)
 {
     std::unique_lock<std::mutex> queueLock { this->queue.lock, std::defer_lock };
 
@@ -93,14 +93,13 @@ Dispatcher::Queue::enqueueAviso(Dispatcher::Aviso& aviso)
     {
         this->lastAvisoId++;
 
-        aviso.avisoId = this->lastAvisoId;
+        aviso->avisoId = this->lastAvisoId;
     }
 
     this->queue.avisos.push(aviso);
 
-    ReportInfo("[Dispatcher] Enqueued aviso #%u from \"%s\"",
-            aviso.avisoId,
-            aviso.fabulatorName.c_str());
+    ReportInfo("[Dispatcher] Enqueued aviso #%u",
+            aviso->avisoId);
 
     this->queue.condition.notify_one();
 
@@ -112,20 +111,20 @@ Dispatcher::Queue::dequeueAviso(const unsigned int avisoId)
 {
     std::unique_lock<std::mutex> queueLock { this->queue.lock };
 
-    Dispatcher::Aviso& aviso = this->queue.avisos.front();
+    Dispatcher::Aviso* aviso = this->queue.avisos.front();
 
-    if (aviso.avisoId != avisoId)
+    if (aviso->avisoId != avisoId)
     {
         ReportWarning("[Dispatcher] Unexpected aviso in front of the queue: " \
                 "expected #%u, found #%u",
                 avisoId,
-                aviso.avisoId);
+                aviso->avisoId);
     }
 
     this->queue.avisos.pop();
 }
 
-Dispatcher::Aviso&
+Dispatcher::Aviso*
 Dispatcher::Queue::fetchFirstAviso()
 {
     std::unique_lock<std::mutex> queueLock { this->queue.lock, std::defer_lock };
@@ -139,17 +138,17 @@ Dispatcher::Queue::fetchFirstAviso()
         throw Dispatcher::NothingInTheQueue();
     }
 
-    Dispatcher::Aviso& aviso = this->queue.avisos.front();
+    Dispatcher::Aviso* aviso = this->queue.avisos.front();
 
     if (this->queue.avisos.empty() == true)
     {
         ReportInfo("[Dispatcher] Fetched aviso #%u from the queue",
-                aviso.avisoId);
+                aviso->avisoId);
     }
     else
     {
         ReportInfo("[Dispatcher] Fetched aviso #%u from the queue, %u are left",
-                aviso.avisoId,
+                aviso->avisoId,
                 (unsigned int) this->queue.avisos.size());
     }
 
