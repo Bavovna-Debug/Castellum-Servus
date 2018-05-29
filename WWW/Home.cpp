@@ -1,24 +1,22 @@
 // System definition files.
 //
-#include <stdbool.h>
+#include <cstdbool>
 #include <stdexcept>
 
 // Common definition files.
 //
-#include "GPIO/Relay.h"
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
-#include "HTTP/Site.h"
-#include "Toolkit/Report.h"
+#include "GPIO/Exception.hpp"
+#include "GPIO/Relay.hpp"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
+#include "HTTP/Site.hpp"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/WWW/Home.hpp"
 
-using namespace HTML;
-
-#define CHIMAERA_SCRIPT_UPDATE_SYSTEM_INFORMATION \
+#define SCRIPT_UPDATE_SYSTEM_INFORMATION \
 "function update() " \
 "{ " \
     "$(\"#info_sheet\").html('Loading...'); " \
@@ -50,7 +48,7 @@ using namespace HTML;
  * @param[in]   connection  Pointer to HTTP connection.
  */
 void
-WWW::Site::generateDocument(HTTP::Connection &connection)
+WWW::Site::generateDocument(HTTP::Connection& connection)
 {
     HTML::Instance instance(connection);
 
@@ -81,9 +79,9 @@ WWW::Site::generateDocument(HTTP::Connection &connection)
 
                 snprintf(ajaxURL, sizeof(ajaxURL) - sizeof(char),
                         "%s?%s=%s",
-                        WWW::Download,
-                        WWW::DownloadSubject,
-                        WWW::DownloadSubjectAjax);
+                        WWW::Download.c_str(),
+                        WWW::DownloadSubject.c_str(),
+                        WWW::DownloadSubjectAjax.c_str());
 
                 HTML::Script script(instance, "text/javascript", ajaxURL);
             }
@@ -95,12 +93,12 @@ WWW::Site::generateDocument(HTTP::Connection &connection)
             // Static upper part of document.
             //
             { // HTML.Division
-                HTML::Division division(instance, "content-north");
+                HTML::Division division(instance, "content-north", HTML::Nothing);
 
                 // Contents should be located inside of inliner, which defines fixed location on a page.
                 //
                 { // HTML.Division
-                    HTML::Division division(instance, NULL, "inliner");
+                    HTML::Division division(instance, HTML::Nothing, "inliner");
 
                     this->generateNorth(connection, instance);
                 } // HTML.Division
@@ -109,12 +107,12 @@ WWW::Site::generateDocument(HTTP::Connection &connection)
             // Static lower part of document.
             //
             { // HTML.Division
-                HTML::Division division(instance, "content-south");
+                HTML::Division division(instance, "content-south", HTML::Nothing);
 
                 // Contents should be located inside of inliner, which defines fixed location on a page.
                 //
                 { // HTML.Division
-                    HTML::Division division(instance, NULL, "inliner");
+                    HTML::Division division(instance, HTML::Nothing, "inliner");
 
                     this->generateSouth(connection, instance);
                 } // HTML.Division
@@ -161,38 +159,37 @@ WWW::Site::generateDocument(HTTP::Connection &connection)
 }
 
 void
-WWW::Site::processRelays(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    const char  *relayIndex;
-    const char  *relayState;
-
-    relayIndex = connection.argumentByName(WWW::SwitchRelay);
-    if (relayIndex != NULL)
+    try
     {
-        GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
+        const unsigned long relayIndex = connection[WWW::SwitchRelay];
+
+        GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
         try
         {
-            GPIO::Relay *relay = relayStation[strtol(relayIndex, NULL, 10)];
+            GPIO::Relay* relay = relayStation[relayIndex];
 
-            relayState = connection.argumentByName(WWW::RelayState);
-            if (relayState == NULL)
+            try
             {
-                relay->switchOver();
-            }
-            else
-            {
-                if (strcmp(relayState, WWW::RelayStateDown) == 0)
+                const std::string relayState = connection[WWW::RelayState];
+
+                if (relayState == WWW::RelayStateDown)
                 {
                     relay->switchOff();
                 }
-                else if (strcmp(relayState, WWW::RelayStateUp) == 0)
+                else if (relayState == WWW::RelayStateUp)
                 {
                     relay->switchOn();
                 }
             }
+            catch (HTTP::ArgumentDoesNotExist&)
+            {
+                relay->switchOver();
+            }
         }
-        catch (std::out_of_range)
+        catch (GPIO::Exception)
         {
             instance.errorMessage("Relais #%s ist nicht bekannt", relayIndex);
         }
@@ -201,6 +198,8 @@ WWW::Site::processRelays(HTTP::Connection &connection, HTML::Instance &instance)
             instance.errorMessage("Relais #%s kann nicht geschaltet werden", relayIndex);
         }
     }
+    catch (HTTP::ArgumentDoesNotExist&)
+    { }
 }
 
 /**
@@ -210,99 +209,23 @@ WWW::Site::processRelays(HTTP::Connection &connection, HTML::Instance &instance)
  * @param[in]   instance    Pointer to HTML instance.
  */
 void
-WWW::Site::generateNorth(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
 {
-#if 0
-
-    // This is the right place for kinds of messages.
-    //
-    {
-        if (HTTP_ArgumentPairExists(connection, CHIMAERA_ACTION, CHIMAERA_ACTION_ORBIS_SAVE) == true)
-        {
-            if (WWW::FormSubmitted(connection) == true)
-            {
-                WWW_SaveOrbisOption(connection);
-            }
-        }
-
-        if (WWW_OrbisModified() == true)
-        {
-            HTML::WarningMessage(connection,
-                    "There are options with modified values. Save options in MTA flash before switching off the device. Otherwise, modified values will be lost.");
-        }
-
-        if (connection.upload.requested == true)
-        {
-            if (connection.upload.uploaded == false)
-            {
-                HTML::ErrorMessage(connection, "Cannot upload file");
-            }
-            else
-            {
-                HTML::SuccessMessage(connection, "File has been successfully uploaded");
-
-                switch (connection.upload.fileType)
-                {
-                    case HTTP_UPLOAD_FDASY_MASTER:
-                    case HTTP_UPLOAD_FDASY_SLAVE:
-                    case HTTP_UPLOAD_MDASY_MASTER:
-                    case HTTP_UPLOAD_MDASY_SLAVE:
-                    {
-                        HTML::NoticeMessage(connection, "Uploaded file has been skipped");
-
-                        break;
-                    }
-
-                    case HTTP_UPLOAD_FPGA:
-                    {
-                        if (connection.upload.flashed == false)
-                        {
-                            HTML::ErrorMessage(connection, "Error has occurred trying to copy uploaded file to FPGA");
-                        }
-                        else
-                        {
-                            HTML::SuccessMessage(connection, "Uploaded file has been copied to FPGA");
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            connection.upload.requested = false;
-        }
-    }
-
-#endif
-
-#if 0
-
-    // Process forms.
-    //
-    {
-        if (HTTP_ArgumentPairExists(connection, CHIMAERA_ACTION, CHIMAERA_ACTION_ORBIS_EDIT) == true)
-        {
-            WWW_GenerateOrbisEditForm(connection);
-        }
-    }
-
-#endif
-
     { // HTML.Division
-        HTML::Division division(instance, NULL, "tabs");
+        HTML::Division division(instance, HTML::Nothing, "tabs");
 
         // Tabs line.
         //
         { // HTML.UnorderedList
-            HTML::UnorderedList unorderedList(instance, NULL, "tabs_list");
+            HTML::UnorderedList unorderedList(instance, HTML::Nothing, "tabs_list");
 
             // 'Start' tab.
             //
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
-                        NULL,
-                        ((connection.pageIsEqualTo(WWW::PageNone) == true) ||
-                        (connection.pageIsEqualTo(WWW::PageSystemInformation) == true))
+                        HTML::Nothing,
+                        ((connection.pageName().empty() == true) ||
+                        (connection.pageName() == WWW::PageSystemInformation))
                                 ? "tabs_item active"
                                 : "tabs_item");
 
@@ -310,25 +233,25 @@ WWW::Site::generateNorth(HTTP::Connection &connection, HTML::Instance &instance)
                     HTML::URL url(instance, WWW::PageSystemInformation);
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "title");
+                        HTML::Span span(instance, HTML::Nothing, "title");
 
                         span.plain("Start");
                     } // HTML.Span
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "subtitle");
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Systeminformation");
                     } // HTML.Span
                 } // HTML.URL
-            } // HTML.ListItem
+            }
 
             // 'Therma' tab.
             //
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
-                        NULL,
-                        (connection.pageIsEqualTo(WWW::PageTherma) == true)
+                        HTML::Nothing,
+                        (connection.pageName() == WWW::PageTherma)
                                 ? "tabs_item active"
                                 : "tabs_item");
 
@@ -354,7 +277,7 @@ WWW::Site::generateNorth(HTTP::Connection &connection, HTML::Instance &instance)
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
                         NULL,
-                        (connection.pageIsEqualTo(WWW::PageRelay) == true)
+                        (connection.pageName() == WWW::PageRelay)
                                 ? "tabs_item active"
                                 : "tabs_item");
 
@@ -385,27 +308,27 @@ WWW::Site::generateNorth(HTTP::Connection &connection, HTML::Instance &instance)
  * @param[in]   instance    Pointer to HTML instance.
  */
 void
-WWW::Site::generateSouth(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::generateSouth(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    if (connection.pageIsEqualTo(WWW::PageNone) == true)
+    if (connection.pageName().empty() == true)
     {
-        this->generateSystemInformation(connection, instance);
+        this->pageSystemInformation(connection, instance);
     }
-    else if (connection.pageIsEqualTo(WWW::PageSystemInformation) == true)
+    else if (connection.pageName() == WWW::PageSystemInformation)
     {
-        this->generateSystemInformation(connection, instance);
+        this->pageSystemInformation(connection, instance);
     }
-    else if (connection.pageIsEqualTo(WWW::PageTherma) == true)
+    else if (connection.pageName() == WWW::PageTherma)
     {
-        this->generateTherma(connection, instance);
+        this->pageTherma(connection, instance);
     }
-    else if (connection.pageIsEqualTo(WWW::PageRelay) == true)
+    else if (connection.pageName() == WWW::PageRelay)
     {
-        this->generateRelay(connection, instance);
+        this->pageRelay(connection, instance);
     }
     else
     {
-        this->generateSystemInformation(connection, instance);
+        this->pageSystemInformation(connection, instance);
     }
 }
 
@@ -418,7 +341,7 @@ WWW::Site::generateSouth(HTTP::Connection &connection, HTML::Instance &instance)
  * @return  Boolean false if current HTTP request is regular request without any submit.
  */
 bool
-WWW::FormSubmitted(HTTP::Connection &connection)
+WWW::Site::formSubmitted(HTTP::Connection& connection)
 {
     return connection.argumentPairExists(WWW::Button, WWW::ButtonSubmit);
 }
@@ -432,7 +355,7 @@ WWW::FormSubmitted(HTTP::Connection &connection)
  * @return  Boolean false if a form has not been cancelled by user.
  */
 bool
-WWW::FormCancelled(HTTP::Connection &connection)
+WWW::Site::formCancelled(HTTP::Connection& connection)
 {
     return connection.argumentPairExists(WWW::Button, WWW::ButtonCancel);
 }

@@ -1,12 +1,15 @@
 // Common definition files.
 //
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/Configuration.hpp"
+#include "Servus/Kernel.hpp"
+#include "Servus/WWW/Home.hpp"
 
 /**
  * @brief   Generate HTML page for the 'System Information' tab.
@@ -17,26 +20,131 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void
-WWW::Site::generateSystemInformation(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, "full", "slice");
+    Servus::Configuration& configuration = Servus::Configuration::SharedInstance();
 
-    {
-        HTML::Table table(instance);
+    HTML::Division division(instance, HTML::Nothing, "workspace");
+
+    { // HTML.Division
+        HTML::Division division(instance, "full", "slice");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("System information");
+        } // HTML.HeadingText
 
         {
-            HTML::TableRow tableRow(instance);
+            HTML::Table table(instance);
 
             {
-                HTML::TableDataCell tableDataCell(instance, NULL, "label");
+                HTML::Caption caption(instance);
 
-                tableDataCell.plain("Software version:");
+                caption.plain("Software");
             }
 
             {
-                HTML::TableDataCell tableDataCell(instance, NULL, "value");
+                HTML::TableBody tableBody(instance);
 
-                tableDataCell.plain("Value");
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Version:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%s", Servus::SoftwareVersion.c_str());
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Läuft seit:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
+                        tableDataCell.plain(kernel.timestampOfStart->YYYYMMDDHHMM());
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Konfigurationsdatei:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%s", configuration.configurationFilePath.c_str());
+                    }
+                }
+            }
+        }
+
+        {
+            HTML::Table table(instance);
+
+            {
+                HTML::Caption caption(instance);
+
+                caption.plain("Netzwerkeinstellungen");
+            }
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("MODBUS TCP Portnummer (IPv4):");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%u", configuration.modbusPortNumber);
+                    }
+                }
+            }
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Webseite TCP Portnummer (IPv4):");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%u", configuration.httpPortNumber);
+                    }
+                }
             }
         }
     }

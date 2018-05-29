@@ -1,13 +1,14 @@
 // Commmon definition files.
 //
-#include "GPIO/Therma.h"
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/Peripherique/ThermiqueSensor.hpp"
+#include "Servus/Peripherique/ThermiqueStation.hpp"
+#include "Servus/WWW/Home.hpp"
 
 /**
  * @brief   Generate HTML page for the 'Therma' tab.
@@ -18,9 +19,9 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void
-WWW::Site::generateTherma(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, NULL, "workspace");
+    HTML::Division division(instance, HTML::Nothing, "workspace");
 
     division.meta("refresh", "10");
 
@@ -49,89 +50,89 @@ WWW::Site::generateTherma(HTTP::Connection &connection, HTML::Instance &instance
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Tief");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Delta");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Aktuell");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Delta");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "centered");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
                         tableDataCell.plain("Hoch");
                     }
                 }
             }
 
-            Therma::Service &thermaService = Therma::Service::SharedInstance();
+            Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
             {
                 HTML::TableBody tableBody(instance);
 
                 for (unsigned int sensorIndex = 0;
-                     sensorIndex < thermaService.size();
+                     sensorIndex < thermiqueStation.size();
                      sensorIndex++)
                 {
-                    Therma::Sensor *sensor = thermaService[sensorIndex];
+                    Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
                     HTML::TableRow tableRow(instance);
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(sensor->name);
+                        tableDataCell.plain(thermiqueSensor->name);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "blue");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                sensor->temperature.lowest);
+                                thermiqueSensor->lastKnown.lowest);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "blue");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("[-%4.2f &#x2103;]",
-                                sensor->temperature.current - sensor->temperature.lowest);
+                                thermiqueSensor->lastKnown.current - thermiqueSensor->lastKnown.lowest);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "green");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                sensor->temperature.current);
+                                thermiqueSensor->lastKnown.current);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "red");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("[+%4.2f &#x2103;]",
-                                sensor->temperature.highest - sensor->temperature.current);
+                                thermiqueSensor->lastKnown.highest - thermiqueSensor->lastKnown.current);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "red");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                sensor->temperature.highest);
+                                thermiqueSensor->lastKnown.highest);
                     }
                 }
             }

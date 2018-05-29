@@ -1,15 +1,9 @@
 // System definition files.
 //
-#include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -20,55 +14,61 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/uio.h>
+#include <cerrno>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 
 // Common definition files.
 //
-#include "GPIO/Therma.h"
-#include "Toolkit/Abacus.h"
 #include "Toolkit/Report.h"
-#include "Toolkit/Times.h"
+#include "Toolkit/Times.hpp"
 #include "Toolkit/Types.h"
 
 // Local definition files.
 //
-#include "Servus/GKrellM.h"
-#include "Servus/Workspace.h"
+#include "Servus/GKrellM.hpp"
+#include "Servus/Kernel.hpp"
+#include "Servus/Peripherique/ThermiqueSensor.hpp"
+#include "Servus/Peripherique/ThermiqueStation.hpp"
 
-static void *
-GKrellM_ThreadHandler(void *);
-
-static int
-GKrellM_SocketOpenReopen(struct GKrellM_Service *);
-
-static int
-GKrellM_SocketClose(struct GKrellM_Service *);
+static void*
+GKrellM_ThreadHandler(void*);
 
 static int
-GKrellM_SocketListen(struct GKrellM_Service *);
+GKrellM_SocketOpenReopen(struct GKrellM_Service*);
 
-static struct GKrellM_Session *
+static int
+GKrellM_SocketClose(struct GKrellM_Service*);
+
+static int
+GKrellM_SocketListen(struct GKrellM_Service*);
+
+static struct GKrellM_Session*
 GKrellM_CreateSession(int sockFD);
 
 static int
-GKrellM_CancelSession(struct GKrellM_Session *);
+GKrellM_CancelSession(struct GKrellM_Session*);
 
 static int
-GKrellM_SetupSession(struct GKrellM_Session *);
+GKrellM_SetupSession(struct GKrellM_Session*);
 
 static int
-GKrellM_StartSessionTimers(struct GKrellM_Session *);
+GKrellM_StartSessionTimers(struct GKrellM_Session*);
 
 static int
-GKrellM_StopSessionTimers(struct GKrellM_Session *);
+GKrellM_StopSessionTimers(struct GKrellM_Session*);
 
 static int
-GKrellM_SendStatement(struct GKrellM_Session *);
+GKrellM_SendStatement(struct GKrellM_Session*);
 
 static void
-GKrellM_SecondsBell(void *);
+GKrellM_SecondsBell(void*);
 
 static void
-GKrellM_UpdaterBell(void *);
+GKrellM_UpdaterBell(void*);
 
 /**
  * @brief   Prepare resources of GKrellM server and start it as a thread.
@@ -79,7 +79,7 @@ GKrellM_UpdaterBell(void *);
  * @return  Error code (negative value), in case of error.
  */
 int
-GKrellM_Start(struct GKrellM_Service *service)
+GKrellM_Start(struct GKrellM_Service* service)
 {
     int rc;
 
@@ -113,13 +113,13 @@ GKrellM_Start(struct GKrellM_Service *service)
  *
  * @param[in]   arg         Pointer to GKrellM service descriptor.
  */
-static void *
-GKrellM_ThreadHandler(void *arg)
+static void*
+GKrellM_ThreadHandler(void* arg)
 {
-    struct GKrellM_Service  *service;
+    struct GKrellM_Service* service;
     int                     rc;
 
-    service = (struct GKrellM_Service *) arg;
+    service = (struct GKrellM_Service*) arg;
 
     ReportInfo("[GKrellM] Started GKrellM server in thread: pid=%d, tid=%ld",
             getpid(),
@@ -162,7 +162,7 @@ GKrellM_ThreadHandler(void *arg)
  * @return  Error code (negative value), if socket cannot be opened.
  */
 static int
-GKrellM_SocketOpenReopen(struct GKrellM_Service *service)
+GKrellM_SocketOpenReopen(struct GKrellM_Service* service)
 {
     int         sockFD;
     const int   socketOptionReuseAddress = 1;
@@ -198,7 +198,7 @@ GKrellM_SocketOpenReopen(struct GKrellM_Service *service)
         rc = setsockopt(sockFD,
                 SOL_SOCKET,
                 SO_REUSEADDR,
-                (char *) &socketOptionReuseAddress,
+                (char*) &socketOptionReuseAddress,
                 sizeof(socketOptionReuseAddress));
         if (rc == -1)
         {
@@ -216,7 +216,7 @@ GKrellM_SocketOpenReopen(struct GKrellM_Service *service)
         rc = setsockopt(sockFD,
                 IPPROTO_TCP,
                 TCP_NODELAY,
-                (char *) &socketOptionNagleAlgorithm,
+                (char*) &socketOptionNagleAlgorithm,
                 sizeof(socketOptionNagleAlgorithm));
         if (rc == -1)
         {
@@ -241,7 +241,7 @@ GKrellM_SocketOpenReopen(struct GKrellM_Service *service)
         service->serverAddress.sin_port = htons(GKRELLM_TCP_PORT);
 
         rc = bind(sockFD,
-                (struct sockaddr *) &service->serverAddress,
+                (struct sockaddr*) &service->serverAddress,
                 sizeof(struct sockaddr_in));
         if (rc == -1)
         {
@@ -296,7 +296,7 @@ GKrellM_SocketOpenReopen(struct GKrellM_Service *service)
  * @return  Error code (negative value), if socket cannot be closed.
  */
 static int
-GKrellM_SocketClose(struct GKrellM_Service *service)
+GKrellM_SocketClose(struct GKrellM_Service* service)
 {
     int sockFD;
     int rc;
@@ -331,9 +331,9 @@ GKrellM_SocketClose(struct GKrellM_Service *service)
  * @return  Error code (negative value), in case of error in socket layer.
  */
 static int
-GKrellM_SocketListen(struct GKrellM_Service *service)
+GKrellM_SocketListen(struct GKrellM_Service* service)
 {
-    struct GKrellM_Session  *session;
+    struct GKrellM_Session* session;
     struct sockaddr_in      clientAddress;
     socklen_t               clientAddressLength;
     int                     connectedSockFD;
@@ -345,7 +345,7 @@ GKrellM_SocketListen(struct GKrellM_Service *service)
     {
         connectedSockFD = accept(
                 service->listeningSockFD,
-                (struct sockaddr *) &clientAddress,
+                (struct sockaddr*) &clientAddress,
                 &clientAddressLength);
         if (connectedSockFD == -1)
         {
@@ -393,13 +393,13 @@ GKrellM_SocketListen(struct GKrellM_Service *service)
  * @return  0 upon successful completion.
  * @return  Error code (negative value), in case of error.
  */
-static struct GKrellM_Session *
+static struct GKrellM_Session*
 GKrellM_CreateSession(int connectedSockFD)
 {
-    struct GKrellM_Session  *session;
+    struct GKrellM_Session* session;
     int                     rc;
 
-    session = (struct GKrellM_Session *) malloc(sizeof(struct GKrellM_Session));
+    session = (struct GKrellM_Session*) malloc(sizeof(struct GKrellM_Session));
     if (session == NULL)
     {
         ReportSoftAlert("[GKrellM] Out of memory");
@@ -445,7 +445,7 @@ GKrellM_CreateSession(int connectedSockFD)
  * @return  Error code (negative value), in case of error.
  */
 static int
-GKrellM_CancelSession(struct GKrellM_Session *session)
+GKrellM_CancelSession(struct GKrellM_Session* session)
 {
     int rc;
 
@@ -541,17 +541,17 @@ GKrellM_CancelSession(struct GKrellM_Session *session)
  * @return  Error code (negative value), in case of error.
  */
 static int
-GKrellM_SetupSession(struct GKrellM_Session *session)
+GKrellM_SetupSession(struct GKrellM_Session* session)
 {
     struct pollfd   pollFD;
     int             timeout;
     ssize_t         bytesReceived;
     time_t          now;
-    struct tm       *tm;
+    struct tm*      tm;
     int             rc;
 
-    Workspace::Servus &workspace = Workspace::Servus::SharedInstance();
-    Therma::Service &thermaService = Therma::Service::SharedInstance();
+    Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
+    Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
     // 1st step: Wait if any data is suppose to come at all.
     // Quit the thread if nothing happens on a line.
@@ -710,16 +710,16 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
 
 
             for (unsigned int sensorIndex = 0;
-                 sensorIndex < thermaService.size();
+                 sensorIndex < thermiqueStation.size();
                  sensorIndex++)
             {
-                Therma::Sensor *sensor = thermaService[sensorIndex];
+                Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
                 sprintf(session->buffer,
                         "%u \"%s\" 0 0 0 0.0 0.0 \"NONE\" \"%s\" 0\n",
                         GKRELLM_SENSOR_TEMPERATURE,
-                        sensor->deviceId,
-                        sensor->name);
+                        thermiqueSensor->deviceId.c_str(),
+                        thermiqueSensor->name.c_str());
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {
@@ -925,7 +925,7 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - workspace.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart->seconds()) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {
@@ -945,16 +945,16 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
             }
 
             for (unsigned int sensorIndex = 0;
-                 sensorIndex < thermaService.size();
+                 sensorIndex < thermiqueStation.size();
                  sensorIndex++)
             {
-                Therma::Sensor *sensor = thermaService[sensorIndex];
+                Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
                 sprintf(session->buffer,
                         "%u \"%s\" 0 0 0 %.3f\n",
                         GKRELLM_SENSOR_TEMPERATURE,
-                        sensor->deviceId,
-                        sensor->temperature.current);
+                        thermiqueSensor->deviceId.c_str(),
+                        thermiqueSensor->lastKnown.current);
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {
@@ -984,7 +984,7 @@ GKrellM_SetupSession(struct GKrellM_Session *session)
  * @return  Error code (negative value), in case of error with system resources.
  */
 static int
-GKrellM_StartSessionTimers(struct GKrellM_Session *session)
+GKrellM_StartSessionTimers(struct GKrellM_Session* session)
 {
     struct sigevent     event;
     timer_t             timerId;
@@ -1084,7 +1084,7 @@ GKrellM_StartSessionTimers(struct GKrellM_Session *session)
  * @return  Error code (negative value), in case of error with system resources.
  */
 static int
-GKrellM_StopSessionTimers(struct GKrellM_Session *session)
+GKrellM_StopSessionTimers(struct GKrellM_Session* session)
 {
     struct itimerspec   timerSpec;
     struct itimerspec   timerSpecSaved;
@@ -1153,7 +1153,7 @@ GKrellM_StopSessionTimers(struct GKrellM_Session *session)
  * @return  Error code (negative value), in case of network I/O error.
  */
 static int
-GKrellM_SendStatement(struct GKrellM_Session *session)
+GKrellM_SendStatement(struct GKrellM_Session* session)
 {
     size_t  bytesToSend;
     ssize_t bytesSent;
@@ -1180,16 +1180,16 @@ GKrellM_SendStatement(struct GKrellM_Session *session)
 }
 
 static void
-GKrellM_SecondsBell(void *arg)
+GKrellM_SecondsBell(void* arg)
 {
-    struct GKrellM_Session  *session;
+    struct GKrellM_Session* session;
     time_t                  now;
-    struct tm               *tm;
+    struct tm*              tm;
     int                     rc;
 
-    Workspace::Servus &workspace = Workspace::Servus::SharedInstance();
+    Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
 
-    session = (struct GKrellM_Session *) arg;
+    session = (struct GKrellM_Session*) arg;
 
     rc = pthread_mutex_trylock(&session->transmission.mutex);
     if (rc != 0)
@@ -1268,7 +1268,7 @@ GKrellM_SecondsBell(void *arg)
 
             sprintf(session->buffer,
                     "%lu\n",
-                    (Toolkit::TimestampSeconds() - workspace.timestampOfStart) / SECOND_PER_MINUTE);
+                    (Toolkit::TimestampSeconds() - kernel.timestampOfStart->seconds()) / SECOND_PER_MINUTE);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {
@@ -1299,14 +1299,14 @@ quit:
 }
 
 static void
-GKrellM_UpdaterBell(void *arg)
+GKrellM_UpdaterBell(void* arg)
 {
-    struct GKrellM_Session  *session;
+    struct GKrellM_Session* session;
     int                     rc;
 
-    session = (struct GKrellM_Session *) arg;
+    session = (struct GKrellM_Session*) arg;
 
-    Therma::Service &thermaService = Therma::Service::SharedInstance();
+    Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
     rc = pthread_mutex_trylock(&session->transmission.mutex);
     if (rc != 0)
@@ -1338,16 +1338,16 @@ GKrellM_UpdaterBell(void *arg)
         }
 
         for (unsigned int sensorIndex = 0;
-             sensorIndex < thermaService.size();
+             sensorIndex < thermiqueStation.size();
              sensorIndex++)
         {
-            Therma::Sensor *sensor = thermaService[sensorIndex];
+            Peripherique::ThermiqueSensor* thermiqueSensor = thermiqueStation[sensorIndex];
 
             sprintf(session->buffer,
                     "%u \"%s\" 0 0 0 %.3f\n",
                     GKRELLM_SENSOR_TEMPERATURE,
-                    sensor->deviceId,
-                    sensor->temperature.current);
+                    thermiqueSensor->deviceId.c_str(),
+                    thermiqueSensor->lastKnown.current);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {

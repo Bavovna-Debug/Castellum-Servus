@@ -136,4 +136,4 @@ struct GKrellM_Session
  * @return  Error code (negative value), in case of error.
  */
 int
-GKrellM_Start(struct GKrellM_Service *service);
+GKrellM_Start(struct GKrellM_Service* service);

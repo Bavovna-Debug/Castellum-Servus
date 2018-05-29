@@ -1,13 +1,13 @@
 // Common definition files.
 //
-#include "GPIO/Relay.h"
-#include "HTTP/Connection.h"
-#include "HTTP/HTML.h"
-#include "HTTP/HTTP.h"
+#include "GPIO/Relay.hpp"
+#include "HTTP/Connection.hpp"
+#include "HTTP/HTML.hpp"
+#include "HTTP/HTTP.hpp"
 
 // Local definition files.
 //
-#include "Servus/WWW/Home.h"
+#include "Servus/WWW/Home.hpp"
 
 /**
  * @brief   Generate HTML page for the 'Relay' tab.
@@ -16,9 +16,9 @@
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
+WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, NULL, "workspace");
+    HTML::Division division(instance, HTML::Nothing, "workspace");
 
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
@@ -64,7 +64,7 @@ WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
                 }
             }
 
-            GPIO::RelayStation &relayStation = GPIO::RelayStation::SharedInstance();
+            GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
             {
                 HTML::TableBody tableBody(instance);
@@ -73,36 +73,36 @@ WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
                      relayIndex < relayStation.size();
                      relayIndex++)
                 {
-                    GPIO::Relay *relay = relayStation[relayIndex];
+                    GPIO::Relay* relay = relayStation[relayIndex];
 
                     HTML::TableRow tableRow(instance);
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
                         tableDataCell.plain(relay->name);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL,
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing,
                                 (relay->isOff()) ? "red" : "green");
 
                         tableDataCell.plain((relay->isOff()) ? "Aus" : "Ein");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "action");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
 
                         { // HTML.URL
                             char urlString[200];
 
                             snprintf(urlString, sizeof(urlString),
                                     "%s?%s=%u&%s=%s",
-                                    connection.pageName(),
-                                    WWW::SwitchRelay,
+                                    connection.pageName().c_str(),
+                                    WWW::SwitchRelay.c_str(),
                                     relayIndex,
-                                    WWW::RelayState,
-                                    WWW::RelayStateDown);
+                                    WWW::RelayState.c_str(),
+                                    WWW::RelayStateDown.c_str());
 
                             HTML::URL url(instance,
                                     urlString,
@@ -114,18 +114,18 @@ WWW::Site::generateRelay(HTTP::Connection &connection, HTML::Instance &instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, NULL, "action");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
 
                         { // HTML.URL
                             char urlString[200];
 
                             snprintf(urlString, sizeof(urlString),
                                     "%s?%s=%u&%s=%s",
-                                    connection.pageName(),
-                                    WWW::SwitchRelay,
+                                    connection.pageName().c_str(),
+                                    WWW::SwitchRelay.c_str(),
                                     relayIndex,
-                                    WWW::RelayState,
-                                    WWW::RelayStateUp);
+                                    WWW::RelayState.c_str(),
+                                    WWW::RelayStateUp.c_str());
 
                             HTML::URL url(instance,
                                     urlString,
