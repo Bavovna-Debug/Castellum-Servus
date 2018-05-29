@@ -147,7 +147,7 @@ Dispatcher::Queue::fetchFirstAviso()
     }
     else
     {
-        ReportInfo("[Dispatcher] Fetched aviso #%u from the queue, %u are left",
+        ReportInfo("[Dispatcher] Fetched aviso #%u from the queue, %u left",
                 aviso->avisoId,
                 (unsigned int) this->queue.avisos.size());
     }
