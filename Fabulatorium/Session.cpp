@@ -239,14 +239,14 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
                                 [](unsigned char c) { return std::iscntrl(c); }),
                                 line.end());
 
-                        Dispatcher::Aviso* aviso = new Dispatcher::Aviso(
+                        Dispatcher::FabulaAviso* aviso = new Dispatcher::FabulaAviso(
                                 timestamp,
                                 fabulatorName,
                                 severityLevel,
                                 notificationFlag,
                                 line);
 
-                        queue.enqueueAviso(*aviso);
+                        queue.enqueueAviso(aviso);
                     }
 
                     response.reset();

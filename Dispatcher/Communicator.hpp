@@ -24,6 +24,8 @@ namespace Dispatcher
         std::thread         thread;
 
     private:
+        bool                setupDone;
+
         struct
         {
             std::string     address;

@@ -1,8 +1,7 @@
 DEFINES += -D LINUX
-#DEFINES += -D DEBUG
-DEFINES += -D REPORT_DEBUG
-#DEFINES += -D REPORT_DUMP
 DEFINES += -D REPORT_SYSLOG
+#DEFINES += -D REPORT_DEBUG
+#DEFINES += -D REPORT_DUMP
 
 CC := gcc
 CPP := g++
@@ -63,13 +62,14 @@ CPPFLAGS += -Wwrite-strings
 # ******************************************************************************
 
 OBJECTS_ROOT          := Configuration.o GKrellM.o Kernel.o Main.o Parse.o
-OBJECTS_DISPATCHER    := Dispatcher/Aviso.o Dispatcher/Communicator.o Dispatcher/Queue.o
+OBJECTS_DISPATCHER    := Dispatcher/Aviso.o Dispatcher/Communicator.o Dispatcher/Queue.o Dispatcher/Setup.o
 OBJECTS_FABULATORIUM  := Fabulatorium/Fabulator.o Fabulatorium/Listener.o Fabulatorium/Session.o
+OBJECTS_PÉRIPHÉRIQUE  := Peripherique/ThermiqueSensor.o Peripherique/ThermiqueStation.o
 OBJECTS_WWW           := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Servus
 
-Servus: $(OBJECTS_ROOT) $(OBJECTS_FABULATORIUM) $(OBJECTS_DISPATCHER) $(OBJECTS_WWW)
+Servus: $(OBJECTS_ROOT) $(OBJECTS_FABULATORIUM) $(OBJECTS_DISPATCHER) $(OBJECTS_PÉRIPHÉRIQUE) $(OBJECTS_WWW)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
 
 # ******************************************************************************
@@ -100,6 +100,9 @@ Dispatcher/Communicator.o: Dispatcher/Communicator.cpp
 Dispatcher/Queue.o: Dispatcher/Queue.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
+Dispatcher/Setup.o: Dispatcher/Setup.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
 # ******************************************************************************
 
 Fabulatorium/Fabulator.o: Fabulatorium/Fabulator.cpp
@@ -109,6 +112,14 @@ Fabulatorium/Listener.o: Fabulatorium/Listener.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Fabulatorium/Session.o: Fabulatorium/Session.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+# ******************************************************************************
+
+Peripherique/ThermiqueSensor.o: Peripherique/ThermiqueSensor.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Peripherique/ThermiqueStation.o: Peripherique/ThermiqueStation.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************

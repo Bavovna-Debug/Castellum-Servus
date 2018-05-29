@@ -13,7 +13,6 @@
 #include "GPIO/LCD.hpp"
 #include "GPIO/Relay.hpp"
 #include "GPIO/Strip.hpp"
-#include "GPIO/Therma.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
 #include "Toolkit/Report.h"
@@ -27,6 +26,8 @@
 #include "Servus/Kernel.hpp"
 #include "Servus/Dispatcher/Communicator.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
+#include "Servus/Peripherique/ThermiqueSensor.hpp"
+#include "Servus/Peripherique/ThermiqueStation.hpp"
 #include "Servus/WWW/Home.hpp"
 
 static void
@@ -82,7 +83,7 @@ Workspace::Kernel::kernelInit()
         GPIO::RelayStation::InitInstance();
         GPIO::Strip::InitInstance();
         GPIO::LCD::InitInstance(GPIO::LineLength2004);
-        Therma::Service::InitInstance();
+        Peripherique::ThermiqueStation::InitInstance();
     }
     catch (std::exception& exception)
     {
@@ -207,10 +208,6 @@ Workspace::Kernel::kernelExec()
         GPIO::Strip& stripService = GPIO::Strip::SharedInstance();
 
         stripService.startService();
-
-        Therma::Service& thermaService = Therma::Service::SharedInstance();
-
-        thermaService.startService();
 
         Dispatcher::Communicator& communicator = Dispatcher::Communicator::SharedInstance();
         communicator.start();
