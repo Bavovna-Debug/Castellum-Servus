@@ -16,6 +16,7 @@ LIBS += -L../MODBUS/
 LIBS += -L../RTSP/
 LIBS += -L../Toolkit/
 
+LIBS += -lCryptography
 LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
@@ -27,6 +28,8 @@ LIBS += -lCommunicator
 LIBS += -pthread
 LIBS += -lconfig++
 LIBS += -lrt
+LIBS += -lssl
+LIBS += -lcrypto
 LIBS += -lwiringPi
 LIBS += -lwiringPiDev
 

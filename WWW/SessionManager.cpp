@@ -9,6 +9,7 @@
 //
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
+#include "Toolkit/Cryptography/MD5.hpp"
 
 // Local definition files.
 //
@@ -47,7 +48,7 @@ WWW::SessionManager::login(
 {
     Servus::Configuration& configuration = Servus::Configuration::SharedInstance();
 
-    if (clearTextPassword != configuration.http.password)
+    if (Cryptography::MD5(clearTextPassword) != configuration.http.passwordMD5)
     {
         ReportWarning("[WWW] Forbid access for %s with password '%s'",
                 guestAddress.c_str(),

@@ -42,11 +42,11 @@ Servus::Configuration::load()
             Setting &httpSetting = rootSetting["HTTP"];
 
             unsigned int portNumber         = httpSetting["PortNumberIPv4"];
-            std::string password            = httpSetting["Password"];
+            std::string passwordMD5         = httpSetting["PasswordMD5"];
             unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
 
             this->http.portNumber = portNumber;
-            this->http.password = password;
+            this->http.passwordMD5 = passwordMD5;
             this->http.keepAliveSession = keepAliveSession;
         }
 
