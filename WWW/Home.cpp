@@ -14,6 +14,7 @@
 
 // Local definition files.
 //
+#include "Servus/Kernel.hpp"
 #include "Servus/WWW/Home.hpp"
 #include "Servus/WWW/SessionManager.hpp"
 
@@ -71,6 +72,11 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
 
     this->processRelays(connection, instance);
 
+    if (connection.pageName().find(WWW::Images) == 0)
+    {
+        connection.download(Workspace::RootPath + connection.pageName());
+    }
+    else
     { // HTML.Document
         HTML::Document document(instance);
 
