@@ -295,13 +295,13 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                     HTML::URL url(instance, WWW::PageTherma);
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "title");
+                        HTML::Span span(instance, HTML::Nothing, "title");
 
                         span.plain("Therma");
                     } // HTML.Span
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "subtitle");
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Temperaturen");
                     } // HTML.Span
@@ -312,7 +312,7 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
             //
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
-                        NULL,
+                        HTML::Nothing,
                         (connection.pageName() == WWW::PageRelay)
                                 ? "tabs_item active"
                                 : "tabs_item");
@@ -321,13 +321,13 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                     HTML::URL url(instance, WWW::PageRelay);
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "title");
+                        HTML::Span span(instance, HTML::Nothing, "title");
 
                         span.plain("Relais");
                     } // HTML.Span
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "subtitle");
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Relais-Schalttaffel");
                     } // HTML.Span
