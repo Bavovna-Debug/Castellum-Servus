@@ -12,8 +12,8 @@
 
 // Local definition files.
 //
-#include "Quasar/Configuration.hpp"
-#include "Quasar/WWW/SessionManager.hpp"
+#include "Servus/Configuration.hpp"
+#include "Servus/WWW/SessionManager.hpp"
 
 static WWW::SessionManager* instance = NULL;
 
@@ -45,7 +45,7 @@ WWW::SessionManager::login(
     const std::string& guestAddress,
     const std::string& clearTextPassword)
 {
-    Quasar::Configuration& configuration = Quasar::Configuration::SharedInstance();
+    Servus::Configuration& configuration = Servus::Configuration::SharedInstance();
 
     if (clearTextPassword != configuration.http.password)
     {
@@ -70,7 +70,7 @@ WWW::SessionManager::login(
 bool
 WWW::SessionManager::permitted(const std::string& guestAddress)
 {
-    Quasar::Configuration& configuration = Quasar::Configuration::SharedInstance();
+    Servus::Configuration& configuration = Servus::Configuration::SharedInstance();
 
     for (std::vector<WWW::Session*>::size_type sessionIndex = 0;
          sessionIndex < this->sessions.size();
