@@ -29,7 +29,7 @@
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
 #include "Servus/WWW/Home.hpp"
-#include "Quasar/WWW/SessionManager.hpp"
+#include "Servus/WWW/SessionManager.hpp"
 
 static void
 OwnSignalHandler(int signalNumber);

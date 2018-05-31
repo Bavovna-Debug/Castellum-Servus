@@ -7,9 +7,9 @@
 
 // Common definition files.
 //
+#include "Toolkit/MD5.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
-#include "Toolkit/Cryptography/MD5.hpp"
 
 // Local definition files.
 //
