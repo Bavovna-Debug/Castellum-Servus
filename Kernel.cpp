@@ -29,6 +29,7 @@
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
 #include "Servus/WWW/Home.hpp"
+#include "Quasar/WWW/SessionManager.hpp"
 
 static void
 OwnSignalHandler(int signalNumber);
@@ -84,6 +85,7 @@ Workspace::Kernel::kernelInit()
         GPIO::Strip::InitInstance();
         GPIO::LCD::InitInstance(GPIO::LineLength2004);
         Peripherique::ThermiqueStation::InitInstance();
+        WWW::SessionManager::InitInstance();
     }
     catch (std::exception& exception)
     {

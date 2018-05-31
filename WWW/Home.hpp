@@ -40,9 +40,21 @@ namespace WWW
         void
         processRelays(HTTP::Connection&, HTML::Instance&);
 
+        /**
+         * @brief   Generate the north (upper) part of main page.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
         void
         generateNorth(HTTP::Connection&, HTML::Instance&);
 
+        /**
+         * @brief   Generate the south (lower) part of main page.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
         void
         generateSouth(HTTP::Connection&, HTML::Instance&);
 

@@ -36,7 +36,7 @@ waitForTransmissionCompletion(waitForTransmissionCompletion)
     {
         ReportSoftAlert("[Fabulatorium] Out of memory");
 
-        throw std::runtime_error("[Fabulatorium] Out of memory");;
+        throw std::runtime_error("[Fabulatorium] Out of memory");
     }
 }
 
