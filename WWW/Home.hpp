@@ -26,9 +26,15 @@ namespace WWW
     static const std::string RelayStateDown             = "down";
     static const std::string RelayStateUp               = "up";
 
+    static const std::string Action                     = "action";
+    static const std::string ActionLogin                = "login";
+
     static const std::string Button                     = "button";
     static const std::string ButtonSubmit               = "submit";
     static const std::string ButtonCancel               = "cancel";
+
+    static const std::string Username                   = "username";
+    static const std::string Password                   = "password";
 
     class Site : public HTTP::Site
     {
@@ -57,6 +63,15 @@ namespace WWW
          */
         void
         generateSouth(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate login form.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
+        void
+        generateLogin(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'System Information' tab.

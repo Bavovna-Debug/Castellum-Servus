@@ -15,6 +15,7 @@
 // Local definition files.
 //
 #include "Servus/WWW/Home.hpp"
+#include "Quasar/WWW/SessionManager.hpp"
 
 #define SCRIPT_UPDATE_SYSTEM_INFORMATION \
 "function update() " \
@@ -50,6 +51,22 @@
 void
 WWW::Site::generateDocument(HTTP::Connection& connection)
 {
+    bool loginPermitted = false;
+
+    {
+        WWW::SessionManager& sessionManager = WWW::SessionManager::SharedInstance();
+
+        if (connection.argumentPairExists(WWW::Action, WWW::ActionLogin) == true)
+        {
+            sessionManager.login(connection.remoteAddress, connection[WWW::Password]);
+        }
+
+        if (sessionManager.permitted(connection.remoteAddress) == true)
+        {
+            loginPermitted = true;
+        }
+    }
+
     HTML::Instance instance(connection);
 
     this->processRelays(connection, instance);
@@ -90,32 +107,50 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
         { // HTML.Body
             HTML::Body body(instance);
 
-            // Static upper part of document.
-            //
-            { // HTML.Division
-                HTML::Division division(instance, "content-north", HTML::Nothing);
-
-                // Contents should be located inside of inliner, which defines fixed location on a page.
+            if (loginPermitted == false)
+            {
+                // Login form.
                 //
                 { // HTML.Division
-                    HTML::Division division(instance, HTML::Nothing, "inliner");
+                    HTML::Division division(instance, "content-south", HTML::Nothing);
 
-                    this->generateNorth(connection, instance);
+                    // Contents should be located inside of inliner, which defines fixed location on a page.
+                    //
+                    { // HTML.Division
+                        HTML::Division division(instance, HTML::Nothing, "inliner");
+
+                        this->generateLogin(connection, instance);
+                    } // HTML.Division
                 } // HTML.Division
-            } // HTML.Division
-
-            // Static lower part of document.
-            //
-            { // HTML.Division
-                HTML::Division division(instance, "content-south", HTML::Nothing);
-
-                // Contents should be located inside of inliner, which defines fixed location on a page.
+            }
+            else
+            {
+                // Static upper part of document.
                 //
                 { // HTML.Division
-                    HTML::Division division(instance, HTML::Nothing, "inliner");
+                    HTML::Division division(instance, "content-north", HTML::Nothing);
 
-                    this->generateSouth(connection, instance);
+                    // Contents should be located inside of inliner, which defines fixed location on a page.
+                    //
+                    { // HTML.Division
+                        HTML::Division division(instance, HTML::Nothing, "inliner");
+
+                        this->generateNorth(connection, instance);
+                    } // HTML.Division
                 } // HTML.Division
+
+                // Static lower part of document.
+                //
+                { // HTML.Division
+                    HTML::Division division(instance, "content-south", HTML::Nothing);
+
+                    // Contents should be located inside of inliner, which defines fixed location on a page.
+                    //
+                    { // HTML.Division
+                        HTML::Division division(instance, HTML::Nothing, "inliner");
+
+                        this->generateSouth(connection, instance);
+                    } // HTML.Division
 
 { // HTML.Division
     HTML::Division division(instance, "notice_div", "notice_div");
@@ -123,7 +158,8 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
 { // HTML.Division
     HTML::Division division(instance, "some_div", "some_div");
 } // HTML.Division
-            } // HTML.Division
+                } // HTML.Division
+            }
 
             {
                 HTML::Script script(instance, "text/javascript", NULL);
@@ -329,6 +365,94 @@ WWW::Site::generateSouth(HTTP::Connection& connection, HTML::Instance& instance)
     else
     {
         this->pageSystemInformation(connection, instance);
+    }
+}
+
+/**
+ * @brief   Generate login form.
+ *
+ * @param[in]   connection  Pointer to HTTP connection.
+ * @param[in]   instance    Pointer to HTML instance.
+ */
+void
+WWW::Site::generateLogin(HTTP::Connection& connection, HTML::Instance& instance)
+{
+    HTML::Form form(instance,
+            HTML::Get,
+            "full",
+            "observatorium",
+            "observatorium", connection.pageName());
+
+    form.hidden(WWW::Action, WWW::ActionLogin);
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "north");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Anmeldung");
+        } // HTML.HeadingText
+
+        {
+            HTML::DefinitionList definitionList(instance);
+
+            {
+                HTML::DefinitionTerm definitionTerm(instance);
+
+                {
+                    HTML::Label label(instance);
+
+                    label.plain("Benutzername");
+                }
+            }
+
+            {
+                HTML::DefinitionDescription definitionDescription(instance);
+
+                form.textField("description", "inputbox",
+                        WWW::Username,
+                        "",
+                        20, 20);
+            }
+        }
+
+        {
+            HTML::DefinitionList definitionList(instance);
+
+            {
+                HTML::DefinitionTerm definitionTerm(instance);
+
+                {
+                    HTML::Label label(instance);
+
+                    label.plain("Passwort");
+                }
+            }
+
+            {
+                HTML::DefinitionDescription definitionDescription(instance);
+
+                form.password("description", "inputbox",
+                        WWW::Password,
+                        "",
+                        20, 20);
+            }
+        }
+    }
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "south");
+
+        {
+            HTML::Button submitButton(instance,
+                    HTML::Nothing,
+                    HTML::Nothing,
+                    WWW::Button,
+                    WWW::ButtonSubmit);
+
+            submitButton.plain("Login");
+        }
     }
 }
 
