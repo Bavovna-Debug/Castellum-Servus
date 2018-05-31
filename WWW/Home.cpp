@@ -168,7 +168,7 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             }
 
             {
-                HTML::Script script(instance, "text/javascript", NULL);
+                HTML::Script script(instance, "text/javascript", HTML::Nothing);
 
                 script.plain(
                         "function update() "

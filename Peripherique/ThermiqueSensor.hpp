@@ -2,6 +2,7 @@
 
 // System definition files.
 //
+#include <cstdbool>
 #include <string>
 
 // Common definition files.
@@ -22,6 +23,8 @@ namespace Peripherique
         std::string name;
 
         float       edge;
+
+        bool        changed;
 
         struct
         {
