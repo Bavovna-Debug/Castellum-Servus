@@ -16,6 +16,7 @@ LIBS += -L../MODBUS/
 LIBS += -L../RTSP/
 LIBS += -L../Toolkit/
 
+LIBS += -lCryptography
 LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
@@ -27,6 +28,8 @@ LIBS += -lCommunicator
 LIBS += -pthread
 LIBS += -lconfig++
 LIBS += -lrt
+LIBS += -lssl
+LIBS += -lcrypto
 LIBS += -lwiringPi
 LIBS += -lwiringPiDev
 
@@ -65,7 +68,7 @@ OBJECTS_ROOT          := Configuration.o GKrellM.o Kernel.o Main.o Parse.o
 OBJECTS_DISPATCHER    := Dispatcher/Aviso.o Dispatcher/Communicator.o Dispatcher/Queue.o Dispatcher/Setup.o
 OBJECTS_FABULATORIUM  := Fabulatorium/Fabulator.o Fabulatorium/Listener.o Fabulatorium/Session.o
 OBJECTS_PÉRIPHÉRIQUE  := Peripherique/ThermiqueSensor.o Peripherique/ThermiqueStation.o
-OBJECTS_WWW           := WWW/Home.o WWW/Relay.o WWW/SystemInformation.o WWW/Therma.o
+OBJECTS_WWW           := WWW/Home.o WWW/Relay.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Servus
 
@@ -128,6 +131,9 @@ WWW/Home.o: WWW/Home.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/Relay.o: WWW/Relay.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+WWW/SessionManager.o: WWW/SessionManager.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/SystemInformation.o: WWW/SystemInformation.cpp

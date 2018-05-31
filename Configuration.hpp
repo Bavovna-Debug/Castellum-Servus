@@ -7,27 +7,40 @@
 
 namespace Servus
 {
-    static const std::string SoftwareVersion = "Servus 0.1 [180529]";
+    static const std::string SoftwareVersion = "Servus 0.2 [180531]";
 
-    static const unsigned DefaultMODBUSPortNumber                       = 502;
-    static const unsigned DefaultHTTPPortNumber                         = 12080;
+    static const unsigned DefaultMODBUSPortNumberIPv4               = 502;
 
-    static const unsigned DefaultPrimusSleepIfRejectedByPrimus          = 120;  /**< Seconds. */
-    static const unsigned DefaultPrimusReconnectInterval                = 5;    /**< Seconds. */
-    static const unsigned DefaultPrimusWaitForResponse                  = 5000; /**< Milliseconds. */
-    static const unsigned DefaultPrimusWaitForDatagramCompletion        = 2000; /**< Milliseconds. */
-    static const unsigned DefaultListenerWaitForFirstTransmission       = 1000; /**< Milliseconds. */
-    static const unsigned DefaultListenerWaitForTransmissionCompletion  = 500;  /**< Milliseconds. */
+    static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
+    static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
 
-    static const unsigned WaitBeforeNetworkRetry                        = 60;   /**< Seconds. */
+    static const unsigned DefaultPrimusSleepIfRejectedByPrimus      = 120;      /**< Seconds. */
+    static const unsigned DefaultPrimusReconnectInterval            = 5;        /**< Seconds. */
+    static const unsigned DefaultPrimusWaitForResponse              = 5000;     /**< Milliseconds. */
+    static const unsigned DefaultPrimusWaitForDatagramCompletion    = 2000;     /**< Milliseconds. */
+    static const unsigned DefaultListenerWaitForFirstTransmission   = 1000;     /**< Milliseconds. */
+    static const unsigned DefaultListenerWaitForTransmissionCompletion = 500;   /**< Milliseconds. */
+
+    static const unsigned WaitBeforeNetworkRetry                    = 60;       /**< Seconds. */
 
     class Configuration
     {
     public:
-        std::string         configurationFilePath;
+        std::string             configurationFilePath;
 
-        unsigned short      modbusPortNumber;
-        unsigned short      httpPortNumber;
+        struct
+        {
+            unsigned short      portNumber;
+        }
+        modbus;
+
+        struct
+        {
+            unsigned short      portNumber;
+            std::string         passwordMD5;
+            unsigned int        keepAliveSession;
+        }
+        http;
 
     public:
         static Configuration&

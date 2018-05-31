@@ -32,8 +32,9 @@ Servus::Configuration::SharedInstance()
 Servus::Configuration::Configuration(const std::string& configurationFilePath) :
 configurationFilePath(configurationFilePath)
 {
-    this->modbusPortNumber = Servus::DefaultMODBUSPortNumber;
-    this->httpPortNumber = Servus::DefaultHTTPPortNumber;
+    this->modbus.portNumber     = Servus::DefaultMODBUSPortNumberIPv4;
+    this->http.portNumber       = Servus::DefaultHTTPPortNumberIPv4;
+    this->http.keepAliveSession = Servus::DefaultHTTPKeepAliveSession;
 }
 
 libconfig::Config&

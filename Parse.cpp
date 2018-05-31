@@ -26,18 +26,36 @@ Servus::Configuration::load()
     {
         Setting& rootSetting = config.getRoot();
 
-        Setting& servusSetting = rootSetting["Servus"];
+        // MODBUS block.
+        //
+        {
+            Setting &modbusSetting = rootSetting["MODBUS"];
 
-        unsigned int modbusPortNumber = servusSetting["MODBUS_PortNumberIPv4"];
-        unsigned int httpPortNumber = servusSetting["HTTP_PortNumberIPv4"];
+            unsigned int portNumber = modbusSetting["PortNumberIPv4"];
 
-        this->modbusPortNumber = modbusPortNumber;
-        this->httpPortNumber = httpPortNumber;
+            this->modbus.portNumber = portNumber;
+        }
 
+        // HTTP block.
+        //
+        {
+            Setting &httpSetting = rootSetting["HTTP"];
+
+            unsigned int portNumber         = httpSetting["PortNumberIPv4"];
+            std::string passwordMD5         = httpSetting["PasswordMD5"];
+            unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
+
+            this->http.portNumber = portNumber;
+            this->http.passwordMD5 = passwordMD5;
+            this->http.keepAliveSession = keepAliveSession;
+        }
+
+        // Primus block.
+        //
         {
             Dispatcher::Communicator& communicator = Dispatcher::Communicator::SharedInstance();
 
-            Setting& primusSetting = servusSetting["Primus"];
+            Setting& primusSetting = rootSetting["Primus"];
 
             const std::string   address          = primusSetting["Address"];
             const unsigned int  portNumber       = primusSetting["PortNumber"];
@@ -62,9 +80,13 @@ Servus::Configuration::load()
             { }
         }
 
+        // Fabulatorium block.
+        //
         {
-            Setting& fabulatoriumSetting = servusSetting["Fabulatorium"];
+            Setting& fabulatoriumSetting = rootSetting["Fabulatorium"];
 
+            // Listeners section.
+            //
             {
                 Setting& listenersSetting = fabulatoriumSetting["Listeners"];
 
@@ -96,6 +118,8 @@ Servus::Configuration::load()
                 }
             }
 
+            // Fabulators section.
+            //
             {
                 Setting& fabulatorsSetting = fabulatoriumSetting["Fabulators"];
 

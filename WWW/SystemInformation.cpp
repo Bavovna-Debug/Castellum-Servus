@@ -122,7 +122,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.modbusPortNumber);
+                        tableDataCell.plain("%u", configuration.modbus.portNumber);
                     }
                 }
             }
@@ -142,7 +142,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.httpPortNumber);
+                        tableDataCell.plain("%u", configuration.http.portNumber);
                     }
                 }
             }
