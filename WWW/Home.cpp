@@ -15,7 +15,7 @@
 // Local definition files.
 //
 #include "Servus/WWW/Home.hpp"
-#include "Quasar/WWW/SessionManager.hpp"
+#include "Servus/WWW/SessionManager.hpp"
 
 #define SCRIPT_UPDATE_SYSTEM_INFORMATION \
 "function update() " \
