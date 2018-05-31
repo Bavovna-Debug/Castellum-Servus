@@ -107,14 +107,14 @@ Workspace::Kernel::kernelInit()
 
     configuration.load();
 
-    this->modbus = new MODBUS::Service(configuration.modbusPortNumber);
+    this->modbus = new MODBUS::Service(configuration.modbus.portNumber);
 
     // Start HTTP service.
     //
     this->http = new HTTP::Service(new WWW::Site(),
             IP::IPv4,
             "",
-            configuration.httpPortNumber,
+            configuration.http.portNumber,
             0x9000,
             0xAA00,
             this->timestampOfStart->seconds());
