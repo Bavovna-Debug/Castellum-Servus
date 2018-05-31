@@ -288,32 +288,6 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                 } // HTML.URL
             }
 
-            // 'Therma' tab.
-            //
-            { // HTML.ListItem
-                HTML::ListItem listItem(instance,
-                        HTML::Nothing,
-                        (connection.pageName() == WWW::PageTherma)
-                                ? "tabs_item active"
-                                : "tabs_item");
-
-                { // HTML.URL
-                    HTML::URL url(instance, WWW::PageTherma);
-
-                    { // HTML.Span
-                        HTML::Span span(instance, HTML::Nothing, "title");
-
-                        span.plain("Therma");
-                    } // HTML.Span
-
-                    { // HTML.Span
-                        HTML::Span span(instance, HTML::Nothing, "subtitle");
-
-                        span.plain("Temperaturen");
-                    } // HTML.Span
-                } // HTML.URL
-            } // HTML.ListItem
-
             // 'Relay' tab.
             //
             { // HTML.ListItem
@@ -336,6 +310,32 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Relais-Schalttaffel");
+                    } // HTML.Span
+                } // HTML.URL
+            } // HTML.ListItem
+
+            // 'Therma' tab.
+            //
+            { // HTML.ListItem
+                HTML::ListItem listItem(instance,
+                        HTML::Nothing,
+                        (connection.pageName() == WWW::PageTherma)
+                                ? "tabs_item active"
+                                : "tabs_item");
+
+                { // HTML.URL
+                    HTML::URL url(instance, WWW::PageTherma);
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "title");
+
+                        span.plain("Therma");
+                    } // HTML.Span
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
+
+                        span.plain("Temperaturen");
                     } // HTML.Span
                 } // HTML.URL
             } // HTML.ListItem

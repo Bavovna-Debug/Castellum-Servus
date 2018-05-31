@@ -41,7 +41,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Relais");
+                        tableDataCell.plain("Bezeichnung");
                     }
 
                     {
@@ -102,14 +102,19 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                                     WWW::SwitchRelay.c_str(),
                                     relayIndex,
                                     WWW::RelayState.c_str(),
-                                    WWW::RelayStateDown.c_str());
+                                    WWW::RelayStateUp.c_str());
 
                             HTML::URL url(instance,
                                     urlString,
-                                    NULL,
-                                    "Schalte Relais aus.");
+                                    "Schalte Relais ein.");
 
-                            url.plain("[Aus]");
+                            url.image("img/enable.png", "Einschalten.");
+
+                            { // HTML.Span
+                                HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
+
+                                span.plain("Ein");
+                            } // HTML.Span
                         } // HTML.URL
                     }
 
@@ -125,14 +130,19 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                                     WWW::SwitchRelay.c_str(),
                                     relayIndex,
                                     WWW::RelayState.c_str(),
-                                    WWW::RelayStateUp.c_str());
+                                    WWW::RelayStateDown.c_str());
 
                             HTML::URL url(instance,
                                     urlString,
-                                    NULL,
-                                    "Schalte Relais ein.");
+                                    "Schalte Relais aus.");
 
-                            url.plain("[Ein]");
+                            url.image("img/disable.png", "Ausschalten.");
+
+                            { // HTML.Span
+                                HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
+
+                                span.plain("Aus");
+                            } // HTML.Span
                         } // HTML.URL
                     }
                 }
