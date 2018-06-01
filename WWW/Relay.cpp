@@ -51,15 +51,10 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("");
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                2);
                     }
                 }
             }
@@ -108,7 +103,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Schalte Relais ein.");
 
-                            url.image("img/enable.png", "Einschalten.");
+                            url.image("img/enable.png", "Ein");
 
                             { // HTML.Span
                                 HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
@@ -136,7 +131,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Schalte Relais aus.");
 
-                            url.image("img/disable.png", "Ausschalten.");
+                            url.image("img/disable.png", "Aus");
 
                             { // HTML.Span
                                 HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
