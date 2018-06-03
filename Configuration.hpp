@@ -7,7 +7,7 @@
 
 namespace Servus
 {
-    static const std::string SoftwareVersion = "Servus 0.2 [180531]";
+    static const std::string SoftwareVersion = "Servus 0.3 [180602]";
 
     static const unsigned DefaultMODBUSPortNumberIPv4               = 502;
 

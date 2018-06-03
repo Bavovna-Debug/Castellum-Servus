@@ -4,6 +4,7 @@
 #include <endian.h>
 #include <sys/types.h>
 #include <cerrno>
+#include <cstdbool>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -35,6 +36,8 @@ edge(edge)
     this->lastKnown.current = 0.0;
     this->lastKnown.lowest = Therma::DefaultMinimalThemperature;
     this->lastKnown.highest = Therma::DefaultMaximalThemperature;
+
+    this->changed = false;
 }
 
 void
@@ -54,8 +57,8 @@ Peripherique::ThermiqueSensor::refresh()
 
     if (this->lastKnown.current != this->temperature)
     {
-        if ((temperature - this->lastKnown.current >= this->edge) ||
-            (temperature - this->lastKnown.current <= -this->edge))
+        if ((this->temperature - this->lastKnown.current >= this->edge) ||
+            (this->temperature - this->lastKnown.current <= -(this->edge)))
         {
             ReportDebug("[Périphérique] Temperature of '%s' has changed: %.2f -> %.2f (%.2f / %.2f)",
                     this->name.c_str(),
@@ -65,6 +68,8 @@ Peripherique::ThermiqueSensor::refresh()
                     this->lastKnown.highest);
 
             this->lastKnown.current = this->temperature;
+
+            this->changed = true;
         }
     }
 }

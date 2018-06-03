@@ -20,6 +20,7 @@
 // Local definition files.
 //
 #include "Servus/Configuration.hpp"
+#include "Servus/Kernel.hpp"
 #include "Servus/Dispatcher/Aviso.hpp"
 #include "Servus/Dispatcher/Communicator.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
@@ -206,8 +207,11 @@ Dispatcher::Communicator::HandleSession(
     {
         request.reset();
 
+        Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
+
         request["CSeq"] = expectedCSeq;
         request["Authenticator"] = communicator->primus.authenticator;
+        request["Running-Since"] = kernel.timestampOfStart->floatString();
         request["Agent"] = Servus::SoftwareVersion;
         request.generateRequest("AUTH", "rtsp://primus");
 

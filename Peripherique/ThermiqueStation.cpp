@@ -4,6 +4,7 @@
 #include <endian.h>
 #include <sys/types.h>
 #include <cerrno>
+#include <cstdbool>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -91,12 +92,12 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
             {
                 Peripherique::ThermiqueSensor *sensor = (*thermiqueStation)[sensorIndex];
 
-                float lastKnownTemperature = sensor->temperature;
-
                 sensor->refresh();
 
-                if (sensor->temperature != lastKnownTemperature)
+                if (sensor->changed == true)
                 {
+                    sensor->changed = false;
+
                     Dispatcher::TemperatureAviso* aviso = new Dispatcher::TemperatureAviso(
                             sensor->token,
                             sensor->temperature);

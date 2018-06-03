@@ -60,7 +60,6 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
             const std::string thermaToken   = jsonTherma["Token"].GetString();
             const std::string thermaName    = jsonTherma["Name"].GetString();
             const float edge                = jsonTherma["Edge"].GetDouble();
-            //const unsigned int modbusUnitId = jsonTherma["MODBUS"].GetInt();
 
             thermiqueStation += new Peripherique::ThermiqueSensor(
                     deviceId,

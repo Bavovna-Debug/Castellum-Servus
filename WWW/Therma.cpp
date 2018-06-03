@@ -78,6 +78,12 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 
                         tableDataCell.plain("Hoch");
                     }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Präzision");
+                    }
                 }
             }
 
@@ -133,6 +139,13 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 
                         tableDataCell.plain("%4.2f &#x2103;",
                                 thermiqueSensor->lastKnown.highest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
+
+                        tableDataCell.plain("%3.2f &#x2103;",
+                                thermiqueSensor->edge);
                     }
                 }
             }

@@ -14,6 +14,7 @@
 
 // Local definition files.
 //
+#include "Servus/Kernel.hpp"
 #include "Servus/WWW/Home.hpp"
 #include "Servus/WWW/SessionManager.hpp"
 
@@ -71,6 +72,11 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
 
     this->processRelays(connection, instance);
 
+    if (connection.pageName().find(WWW::Images) == 0)
+    {
+        connection.download(Workspace::RootPath + connection.pageName());
+    }
+    else
     { // HTML.Document
         HTML::Document document(instance);
 
@@ -162,7 +168,7 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             }
 
             {
-                HTML::Script script(instance, "text/javascript", NULL);
+                HTML::Script script(instance, "text/javascript", HTML::Nothing);
 
                 script.plain(
                         "function update() "
@@ -282,6 +288,32 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                 } // HTML.URL
             }
 
+            // 'Relay' tab.
+            //
+            { // HTML.ListItem
+                HTML::ListItem listItem(instance,
+                        HTML::Nothing,
+                        (connection.pageName() == WWW::PageRelay)
+                                ? "tabs_item active"
+                                : "tabs_item");
+
+                { // HTML.URL
+                    HTML::URL url(instance, WWW::PageRelay);
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "title");
+
+                        span.plain("Relais");
+                    } // HTML.Span
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
+
+                        span.plain("Relais-Schalttaffel");
+                    } // HTML.Span
+                } // HTML.URL
+            } // HTML.ListItem
+
             // 'Therma' tab.
             //
             { // HTML.ListItem
@@ -295,41 +327,15 @@ WWW::Site::generateNorth(HTTP::Connection& connection, HTML::Instance& instance)
                     HTML::URL url(instance, WWW::PageTherma);
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "title");
+                        HTML::Span span(instance, HTML::Nothing, "title");
 
                         span.plain("Therma");
                     } // HTML.Span
 
                     { // HTML.Span
-                        HTML::Span span(instance, NULL, "subtitle");
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Temperaturen");
-                    } // HTML.Span
-                } // HTML.URL
-            } // HTML.ListItem
-
-            // 'Relay' tab.
-            //
-            { // HTML.ListItem
-                HTML::ListItem listItem(instance,
-                        NULL,
-                        (connection.pageName() == WWW::PageRelay)
-                                ? "tabs_item active"
-                                : "tabs_item");
-
-                { // HTML.URL
-                    HTML::URL url(instance, WWW::PageRelay);
-
-                    { // HTML.Span
-                        HTML::Span span(instance, NULL, "title");
-
-                        span.plain("Relais");
-                    } // HTML.Span
-
-                    { // HTML.Span
-                        HTML::Span span(instance, NULL, "subtitle");
-
-                        span.plain("Relais-Schalttaffel");
                     } // HTML.Span
                 } // HTML.URL
             } // HTML.ListItem
@@ -380,8 +386,9 @@ WWW::Site::generateLogin(HTTP::Connection& connection, HTML::Instance& instance)
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium", connection.pageName());
+            "colloquium",
+            "colloquium",
+            connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionLogin);
 
