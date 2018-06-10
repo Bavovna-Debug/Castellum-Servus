@@ -219,8 +219,8 @@ Dispatcher::Communicator::HandleSession(
         {
             ::Communicator::Send(
                     connection.socket(),
-                    request.payloadBuffer,
-                    request.payloadLength);
+                    request.contentBuffer,
+                    request.contentLength);
         }
         catch (std::exception& exception)
         {
@@ -337,8 +337,8 @@ Dispatcher::Communicator::HandleSession(
             {
                 ::Communicator::Send(
                         connection.socket(),
-                        request.payloadBuffer,
-                        request.payloadLength);
+                        request.contentBuffer,
+                        request.contentLength);
             }
             catch (std::exception& exception)
             {
@@ -431,7 +431,7 @@ Dispatcher::Communicator::HandleSession(
                 throw Dispatcher::Exception("Received unexpected response for configuration");
             }
 
-            Dispatcher::ProcessConfigurationJSON(response.content);
+            Dispatcher::ProcessConfigurationJSON(response.payload());
         }
 
         communicator->setupDone = true;
@@ -448,8 +448,8 @@ Dispatcher::Communicator::HandleSession(
         {
             ::Communicator::Send(
                     connection.socket(),
-                    request.payloadBuffer,
-                    request.payloadLength);
+                    request.contentBuffer,
+                    request.contentLength);
         }
         catch (std::exception& exception)
         {
@@ -575,8 +575,8 @@ Dispatcher::Communicator::HandleSession(
 
                         ::Communicator::Send(
                                 connection.socket(),
-                                request.payloadBuffer,
-                                request.payloadLength);
+                                request.contentBuffer,
+                                request.contentLength);
 
                         // CSeq for each new datagram should be incremented by one.
                         //
@@ -601,14 +601,14 @@ Dispatcher::Communicator::HandleSession(
                     request["CSeq"] = expectedCSeq;
                     request["Agent"] = Servus::SoftwareVersion;
                     aviso->prepare(request);
-                    request.generateRequest(aviso->avisoType, "rtsp://primus");
+                    request.generateRequest(aviso->avisoType, "rtsp://primus", aviso->payload());
 
                     try
                     {
                         ::Communicator::Send(
                                 connection.socket(),
-                                request.payloadBuffer,
-                                request.payloadLength);
+                                request.contentBuffer,
+                                request.contentLength);
 
                         // CSeq for each new datagram should be incremented by one.
                         //

@@ -286,8 +286,8 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
         {
             Communicator::Send(
                     session->socket(),
-                    response.payloadBuffer,
-                    response.payloadLength);
+                    response.contentBuffer,
+                    response.contentLength);
         }
         catch (...)
         { }
