@@ -31,6 +31,10 @@ namespace Dispatcher
 
         virtual void
         prepare(RTSP::Datagram&) const;
+
+        virtual std::string
+        payload()
+        { return ""; }
     };
 
     class FabulaAviso : public Dispatcher::Aviso
@@ -53,6 +57,10 @@ namespace Dispatcher
 
         virtual void
         prepare(RTSP::Datagram&) const;
+
+        virtual std::string
+        payload()
+        { return this->message; }
     };
 
     class TemperatureAviso : public Dispatcher::Aviso

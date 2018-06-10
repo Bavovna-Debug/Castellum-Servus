@@ -69,7 +69,6 @@ Dispatcher::FabulaAviso::prepare(RTSP::Datagram& datagram) const
     datagram["Severity"]        = this->severityLevel;
     datagram["Notification"]    = this->notificationFlag;
     datagram["Originator"]      = this->fabulatorName;
-    datagram["Message"]         = this->message;
 }
 
 Dispatcher::TemperatureAviso::TemperatureAviso(
