@@ -206,8 +206,8 @@ Peripherique::ThermiqueStation::getListOfSensors()
         if (sensor == NULL)
         {
             sensor = new Peripherique::ThermiqueSensor(
-                    directoryEntry->d_name,
                     "",
+                    directoryEntry->d_name,
                     Peripherique::DefaultThermiqueSensorName,
                     0);
 

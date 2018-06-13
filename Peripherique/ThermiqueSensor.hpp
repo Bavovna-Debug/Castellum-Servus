@@ -36,8 +36,8 @@ namespace Peripherique
 
     public:
         ThermiqueSensor(
-            const std::string&  deviceId,
             const std::string&  token,
+            const std::string&  deviceId,
             const std::string&  name,
             const float         edge);
 

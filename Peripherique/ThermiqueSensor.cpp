@@ -24,8 +24,8 @@
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 
 Peripherique::ThermiqueSensor::ThermiqueSensor(
-    const std::string&  deviceId,
     const std::string&  token,
+    const std::string&  deviceId,
     const std::string&  name,
     const float         edge) :
 Inherited(deviceId),
