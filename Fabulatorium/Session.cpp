@@ -138,11 +138,10 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
                 break;
             }
 
-            if (request.headerComplete == true)
+            if (request.datagramComplete() == true)
+            {
                 break;
-
-            /*if (request.payloadComplete == true)
-                break;*/
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.

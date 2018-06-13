@@ -285,8 +285,10 @@ Dispatcher::Communicator::HandleSession(
                 break;
             }
 
-            if (response.headerComplete == true)
+            if (response.datagramComplete() == true)
+            {
                 break;
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.
@@ -403,8 +405,10 @@ Dispatcher::Communicator::HandleSession(
                     break;
                 }
 
-                if (response.headerComplete == true)
+                if (response.datagramComplete() == true)
+                {
                     break;
+                }
 
                 // Wait until next chunk of datagram is available.
                 // Cancel session in case of timeout.
@@ -504,8 +508,10 @@ Dispatcher::Communicator::HandleSession(
                 break;
             }
 
-            if (response.headerComplete == true)
+            if (response.datagramComplete() == true)
+            {
                 break;
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.

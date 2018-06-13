@@ -13,7 +13,7 @@
 
 namespace Dispatcher
 {
-    static const unsigned int MaximalMessageLength = 2048;
+    static const unsigned int MaximalMessageLength = 64 * 1024;
 
     class Communicator
     {
