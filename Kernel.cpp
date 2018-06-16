@@ -28,6 +28,7 @@
 #include "Servus/Dispatcher/Queue.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
+#include "Servus/Peripherique/UPSDevicePool.hpp"
 #include "Servus/WWW/Home.hpp"
 #include "Servus/WWW/SessionManager.hpp"
 
@@ -85,6 +86,7 @@ Workspace::Kernel::kernelInit()
         GPIO::Strip::InitInstance();
         GPIO::LCD::InitInstance(GPIO::LineLength2004);
         Peripherique::ThermiqueStation::InitInstance();
+        Peripherique::UPSDevicePool::InitInstance();
         WWW::SessionManager::InitInstance();
     }
     catch (std::exception& exception)
@@ -207,12 +209,11 @@ Workspace::Kernel::kernelExec()
 
     try
     {
-        GPIO::Strip& stripService = GPIO::Strip::SharedInstance();
+        GPIO::Strip::SharedInstance().startService();
 
-        stripService.startService();
+        Dispatcher::Communicator::SharedInstance().start();
 
-        Dispatcher::Communicator& communicator = Dispatcher::Communicator::SharedInstance();
-        communicator.start();
+        Peripherique::UPSDevicePool::SharedInstance().start();
 
         this->http->startService();
     }
