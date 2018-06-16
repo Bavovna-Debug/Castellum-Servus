@@ -719,7 +719,7 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
                         "%u \"%s\" 0 0 0 0.0 0.0 \"NONE\" \"%s\" 0\n",
                         GKRELLM_SENSOR_TEMPERATURE,
                         thermiqueSensor->deviceId.c_str(),
-                        thermiqueSensor->name.c_str());
+                        thermiqueSensor->title.c_str());
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {

@@ -7,6 +7,7 @@
 //
 #include "GPIO/Relay.hpp"
 #include "GPIO/Therma.hpp"
+#include "Toolkit/Report.h"
 
 // Local definition files.
 //
@@ -24,6 +25,13 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
 
     Value& jsonServus = document["Servus"];
 
+    const std::string servusTitle = jsonServus["Title"].GetString();
+
+    ReportInfo("[Dispatcher] Received configuration for servus '%s'",
+            servusTitle.c_str());
+
+    // Process relays.
+    //
     {
         GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
@@ -37,12 +45,20 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
         {
             Value& jsonRelay = jsonRelayList[relayIndex];
 
-            const unsigned int pinNumber = jsonRelay["Pin"].GetInt();
-            const std::string relayName = jsonRelay["Name"].GetString();
-            relayStation += new GPIO::Relay(pinNumber, relayName);
+            const std::string token         = jsonRelay["Token"].GetString();
+            const unsigned int pinNumber    = jsonRelay["Pin"].GetInt();
+            const std::string title         = jsonRelay["Title"].GetString();
+
+            ReportInfo("[Dispatcher] Setup relay '%s' on GPIO pin %u",
+                    title.c_str(),
+                    pinNumber);
+
+            relayStation += new GPIO::Relay(pinNumber, title);
         }
     }
 
+    // Process temperature sensors.
+    //
     {
         Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
@@ -56,16 +72,17 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
         {
             Value& jsonTherma = jsonThermaList[thermaIndex];
 
-            const std::string deviceId      = jsonTherma["DeviceId"].GetString();
             const std::string thermaToken   = jsonTherma["Token"].GetString();
-            const std::string thermaName    = jsonTherma["Name"].GetString();
+            const std::string deviceId      = jsonTherma["DeviceId"].GetString();
             const float edge                = jsonTherma["Edge"].GetDouble();
+            const std::string title         = jsonTherma["Title"].GetString();
 
-            thermiqueStation += new Peripherique::ThermiqueSensor(
-                    deviceId,
-                    thermaToken,
-                    thermaName,
+            ReportInfo("[Dispatcher] Setup thermique sensor '%s' with device id %s and edge %0.1f",
+                    title.c_str(),
+                    deviceId.c_str(),
                     edge);
+
+            thermiqueStation += new Peripherique::ThermiqueSensor(thermaToken, deviceId, edge, title);
         }
 
         thermiqueStation.startService();

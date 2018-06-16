@@ -133,7 +133,8 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
 Peripherique::ThermiqueStation&
 Peripherique::ThermiqueStation::operator+=(Peripherique::ThermiqueSensor* sensor)
 {
-    ReportInfo("[Périphérique] Defined thermique sensor '%s'", sensor->name.c_str());
+    ReportInfo("[Périphérique] Defined thermique sensor '%s'",
+            sensor->title.c_str());
 
     this->sensors.push_back(sensor);
 
@@ -208,8 +209,8 @@ Peripherique::ThermiqueStation::getListOfSensors()
             sensor = new Peripherique::ThermiqueSensor(
                     "",
                     directoryEntry->d_name,
-                    Peripherique::DefaultThermiqueSensorName,
-                    0);
+                    0,
+                    Peripherique::DefaultThermiqueSensorName);
 
             *this += sensor;
 

@@ -103,7 +103,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(thermiqueSensor->name);
+                        tableDataCell.plain(thermiqueSensor->title);
                     }
 
                     {

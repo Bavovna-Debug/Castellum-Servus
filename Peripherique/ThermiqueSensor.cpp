@@ -26,12 +26,12 @@
 Peripherique::ThermiqueSensor::ThermiqueSensor(
     const std::string&  token,
     const std::string&  deviceId,
-    const std::string&  name,
-    const float         edge) :
+    const float         edge,
+    const std::string&  title) :
 Inherited(deviceId),
 token(token),
-name(name),
-edge(edge)
+edge(edge),
+title(title)
 {
     this->lastKnown.current = 0.0;
     this->lastKnown.lowest = Therma::DefaultMinimalThemperature;

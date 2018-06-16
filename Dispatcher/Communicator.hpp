@@ -41,10 +41,10 @@ namespace Dispatcher
         char*               receiveBuffer;
 
     public:
-        static Communicator&
+        static Dispatcher::Communicator&
         InitInstance();
 
-        static Communicator&
+        static Dispatcher::Communicator&
         SharedInstance();
 
     private:
@@ -71,10 +71,10 @@ namespace Dispatcher
 
     private:
         static void
-        ThreadHandler(Communicator*);
+        ThreadHandler(Dispatcher::Communicator*);
 
         static void
-        HandleSession(Communicator*, TCP::Connection&);
+        HandleSession(Dispatcher::Communicator*, TCP::Connection&);
     };
 
     class Exception : public std::runtime_error

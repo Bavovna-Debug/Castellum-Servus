@@ -75,7 +75,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(relay->name);
+                        tableDataCell.plain(relay->title);
                     }
 
                     {

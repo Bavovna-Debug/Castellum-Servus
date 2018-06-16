@@ -20,9 +20,8 @@ namespace Peripherique
 
     public:
         std::string token;
-        std::string name;
-
         float       edge;
+        std::string title;
 
         bool        changed;
 
@@ -38,8 +37,8 @@ namespace Peripherique
         ThermiqueSensor(
             const std::string&  token,
             const std::string&  deviceId,
-            const std::string&  name,
-            const float         edge);
+            const float         edge,
+            const std::string&  title);
 
         void
         refresh();
