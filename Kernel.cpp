@@ -58,7 +58,7 @@ Workspace::Kernel::SharedInstance()
 }
 
 Workspace::Kernel::Kernel() :
-Inherited()
+Inherited(Servus::InstanceName)
 {
     this->timestampOfStart = new Toolkit::Timestamp();
 }
