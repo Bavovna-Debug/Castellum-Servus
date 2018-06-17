@@ -50,7 +50,7 @@ CFLAGS += -Wunused-value
 CFLAGS += -Wwrite-strings
 
 CPPFLAGS += -O2
-CPPFLAGS += -std=c++14
+CPPFLAGS += -std=c++11
 CPPFLAGS += -Wall
 CPPFLAGS += -Wextra
 CPPFLAGS += -Wdeprecated-declarations
