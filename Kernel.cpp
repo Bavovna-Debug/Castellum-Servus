@@ -75,7 +75,17 @@ Inherited(Servus::InstanceName)
 void
 Workspace::Kernel::kernelInit()
 {
-    int rc = GKrellM_Start(&this->gkrellm);
+    int rc;
+
+    rc = wiringPiSetup();
+    if (rc == -1)
+    {
+        ReportError("[Kernel] Cannot setup wiringPi library - quit");
+
+        throw std::runtime_error("Cannot setup wiringPi library");
+    }
+
+    rc = GKrellM_Start(&this->gkrellm);
     if (rc != 0)
     {
         ReportError("[Kernel] Cannot start GKrellM service - quit");
