@@ -1,11 +1,14 @@
 // System definition files.
 //
 #include <cstdbool>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 // Common definition files.
 //
 #include "GPIO/Exception.hpp"
+#include "GPIO/LCD.hpp"
 #include "GPIO/Relay.hpp"
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
@@ -211,6 +214,8 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
 
         GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
 
+        GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+
         try
         {
             GPIO::Relay* relay = relayStation[relayIndex];
@@ -222,15 +227,39 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
                 if (relayState == WWW::RelayStateDown)
                 {
                     relay->switchOff();
+
+                    std::ostringstream stringStream;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(4) << "OFF";
+
+                    lcd << stringStream.str();
                 }
                 else if (relayState == WWW::RelayStateUp)
                 {
                     relay->switchOn();
+
+                    std::ostringstream stringStream;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(4) << "ON";
+
+                    lcd << stringStream.str();
                 }
             }
             catch (HTTP::ArgumentDoesNotExist&)
             {
                 relay->switchOver();
+
+                std::ostringstream stringStream;
+                stringStream << std::setiosflags(std::ios::left);
+                stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                stringStream << std::setiosflags(std::ios::left);
+                stringStream << std::setfill(' ') << std::setw(4) << "OVER";
+
+                lcd << stringStream.str();
             }
         }
         catch (GPIO::Exception)
