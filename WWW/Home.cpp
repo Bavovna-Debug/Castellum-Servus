@@ -86,7 +86,9 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             { // HTML::Title
                 HTML::Title title(instance);
 
-                title.plain("Servus");
+                Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
+
+                title.plain(kernel.systemName);
             } // HTML::Title
 
             head.meta("Content-Type", "text/html; charset=utf-8");

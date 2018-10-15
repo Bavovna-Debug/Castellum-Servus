@@ -64,6 +64,8 @@ Workspace::Kernel::Kernel() :
 Inherited(Servus::InstanceName)
 {
     this->timestampOfStart = new Toolkit::Timestamp();
+
+    this->systemName = "Servus";
 }
 
 /**
