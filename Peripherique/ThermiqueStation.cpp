@@ -93,36 +93,11 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
                 Peripherique::ThermiqueSensor *sensor = (*thermiqueStation)[sensorIndex];
 
                 sensor->refresh();
-
-                if (sensor->changed == true)
-                {
-                    sensor->changed = false;
-
-                    Dispatcher::TemperatureAviso* aviso = new Dispatcher::TemperatureAviso(
-                            sensor->token,
-                            sensor->temperature);
-
-                    Dispatcher::Queue& queue = Dispatcher::Queue::SharedInstance();
-
-                    queue.enqueueAviso(aviso);
-                }
             }
         }
         catch (std::exception &exception)
         {
             ReportWarning("[Périphérique] Exception on thermique sensors refresh: %s",
-                    exception.what());
-        }
-
-        ReportDebug("[Périphérique] Refreshing LCD");
-
-        try
-        {
-            lcd.refresh();
-        }
-        catch (std::exception &exception)
-        {
-            ReportWarning("[Périphérique] Exception on LCD refresh: %s",
                     exception.what());
         }
     }

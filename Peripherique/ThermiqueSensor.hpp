@@ -20,10 +20,10 @@ namespace Peripherique
 
     public:
         std::string token;
-        float       edge;
+        float       temperatureEdge;
         std::string title;
 
-        bool        changed;
+        bool        changedTemperature;
 
         struct
         {
@@ -31,13 +31,13 @@ namespace Peripherique
             float   lowest;
             float   highest;
         }
-        lastKnown;
+        lastKnownTemperature;
 
     public:
         ThermiqueSensor(
             const std::string&  token,
             const std::string&  deviceId,
-            const float         edge,
+            const float         temperatureEdge,
             const std::string&  title);
 
         void

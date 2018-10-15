@@ -23,7 +23,7 @@ namespace Peripherique
         /**
          * Thread handler of service thread.
          */
-        std::thread             thread;
+        std::thread thread;
 
         std::vector<Peripherique::ThermiqueSensor*> sensors;
 
