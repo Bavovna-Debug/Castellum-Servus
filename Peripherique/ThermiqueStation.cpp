@@ -9,6 +9,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <system_error>
 #include <thread>
 #include <vector>
@@ -94,6 +97,38 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
                 Peripherique::ThermiqueSensor *sensor = (*thermiqueStation)[sensorIndex];
 
                 sensor->refresh();
+
+                if (sensor->changedTemperature == true)
+                {
+                    sensor->changedTemperature = false;
+
+                    Dispatcher::DSTemperatureAviso* aviso = new Dispatcher::DSTemperatureAviso(
+                            sensor->token,
+                            sensor->temperature);
+
+                    Dispatcher::Queue& queue = Dispatcher::Queue::SharedInstance();
+
+                    queue.enqueueAviso(aviso);
+
+                    try
+                    {
+                        ReportDebug("[Périphérique] Refreshing LCD");
+
+                        std::ostringstream stringStream;
+                        stringStream << std::setiosflags(std::ios::left);
+                        stringStream << std::setfill(' ') << std::setw(lcd.numberOfRows - 4);
+                        stringStream << sensor->title;
+                        stringStream << std::fixed << std::setprecision(1);
+                        stringStream << sensor->temperature;
+
+                        lcd << stringStream.str();
+                    }
+                    catch (std::exception &exception)
+                    {
+                        ReportWarning("[Périphérique] Exception on LCD refresh: %s",
+                                exception.what());
+                    }
+                }
 
                 std::this_thread::sleep_for(
                         std::chrono::milliseconds { Servus::WaitBetweenDSSensors } );
