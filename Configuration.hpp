@@ -14,7 +14,7 @@ namespace Servus
     static const unsigned DefaultMODBUSPortNumberIPv4               = 502;
 
     static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
-    static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
+    static const unsigned DefaultHTTPKeepAliveSession               = 3600;     /**< Seconds. */
 
     static const unsigned DefaultPrimusSleepIfRejectedByPrimus      = 120;      /**< Seconds. */
     static const unsigned DefaultPrimusReconnectInterval            = 5;        /**< Seconds. */
