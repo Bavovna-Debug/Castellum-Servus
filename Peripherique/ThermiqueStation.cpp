@@ -21,6 +21,7 @@
 
 // Local definition files.
 //
+#include "Servus/Configuration.hpp"
 #include "Servus/Dispatcher/Aviso.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
@@ -93,6 +94,9 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
                 Peripherique::ThermiqueSensor *sensor = (*thermiqueStation)[sensorIndex];
 
                 sensor->refresh();
+
+                std::this_thread::sleep_for(
+                        std::chrono::milliseconds { Servus::WaitBetweenDSSensors } );
             }
         }
         catch (std::exception &exception)
@@ -100,6 +104,9 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
             ReportWarning("[Périphérique] Exception on thermique sensors refresh: %s",
                     exception.what());
         }
+
+        std::this_thread::sleep_for(
+                std::chrono::milliseconds { Servus::WaitAfterAllDSSensors } );
     }
 
     ReportWarning("[Périphérique] Thermique station thread is going to quit");
