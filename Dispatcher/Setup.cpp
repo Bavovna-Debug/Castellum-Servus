@@ -142,7 +142,18 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                         title.c_str(),
                         pinNumber);
 
-                relayStation += new GPIO::Relay(pinNumber, title);
+                GPIO::Relay* relay = new GPIO::Relay(pinNumber, title);
+
+                relayStation += relay;
+
+                if (defaultState == false)
+                {
+                    relay->switchOff();
+                }
+                else
+                {
+                    relay->switchOn();
+                }
             }
         }
     }
