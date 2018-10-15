@@ -7,6 +7,7 @@
 
 // Common definition files.
 //
+#include "GPIO/LCD.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
@@ -27,6 +28,26 @@ Servus::Configuration::load()
     {
         Setting& rootSetting = config.getRoot();
 
+        // Display block.
+        //
+        {
+            GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+
+            try
+            {
+                Setting &displaySetting = rootSetting["Display"];
+
+                unsigned int numberOfLines  = displaySetting["NumberOfLines"];
+                unsigned int numberOfRows   = displaySetting["NumberOfRows"];
+
+                lcd.setup(numberOfLines, numberOfRows);
+            }
+            catch (SettingNotFoundException& exception)
+            {
+                lcd.setup(0, 0);
+            }
+        }
+
         // MODBUS block.
         //
         {
@@ -46,7 +67,11 @@ Servus::Configuration::load()
             std::string passwordMD5         = httpSetting["PasswordMD5"];
             unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
 
-            std::transform(passwordMD5.begin(), passwordMD5.end(),passwordMD5.begin(), ::toupper);
+            std::transform(
+                    passwordMD5.begin(),
+                    passwordMD5.end(),
+                    passwordMD5.begin(),
+                    ::toupper);
 
             this->http.portNumber = portNumber;
             this->http.passwordMD5 = passwordMD5;
