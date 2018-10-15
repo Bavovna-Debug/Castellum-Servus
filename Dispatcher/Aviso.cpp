@@ -71,16 +71,50 @@ Dispatcher::FabulaAviso::prepare(RTSP::Datagram& datagram) const
     datagram["Originator"]      = this->fabulatorName;
 }
 
-Dispatcher::TemperatureAviso::TemperatureAviso(
+Dispatcher::DHTHumidityAviso::DHTHumidityAviso(
+    const std::string&  sensorToken,
+    const float         humidity) :
+Inherited("DHT_HUMIDITY"),
+sensorToken(sensorToken),
+humidity(humidity)
+{ }
+
+void
+Dispatcher::DHTHumidityAviso::prepare(RTSP::Datagram& datagram) const
+{
+    Inherited::prepare(datagram);
+
+    datagram["Sensor-Token"]    = this->sensorToken;
+    datagram["Humidity"]        = this->humidity;
+}
+
+Dispatcher::DHTTemperatureAviso::DHTTemperatureAviso(
     const std::string&  sensorToken,
     const float         temperature) :
-Inherited("TEMPERATURE"),
+Inherited("DHT_TEMPERATURE"),
 sensorToken(sensorToken),
 temperature(temperature)
 { }
 
 void
-Dispatcher::TemperatureAviso::prepare(RTSP::Datagram& datagram) const
+Dispatcher::DHTTemperatureAviso::prepare(RTSP::Datagram& datagram) const
+{
+    Inherited::prepare(datagram);
+
+    datagram["Sensor-Token"]    = this->sensorToken;
+    datagram["Temperature"]     = this->temperature;
+}
+
+Dispatcher::DSTemperatureAviso::DSTemperatureAviso(
+    const std::string&  sensorToken,
+    const float         temperature) :
+Inherited("DS_TEMPERATURE"),
+sensorToken(sensorToken),
+temperature(temperature)
+{ }
+
+void
+Dispatcher::DSTemperatureAviso::prepare(RTSP::Datagram& datagram) const
 {
     Inherited::prepare(datagram);
 

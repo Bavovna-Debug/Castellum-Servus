@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <wiringPi.h>
 
 // Common definition files.
 //
@@ -26,6 +27,8 @@
 #include "Servus/Kernel.hpp"
 #include "Servus/Dispatcher/Communicator.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
+#include "Servus/Peripherique/HumiditySensor.hpp"
+#include "Servus/Peripherique/HumidityStation.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
 #include "Servus/Peripherique/UPSDevicePool.hpp"
@@ -84,7 +87,8 @@ Workspace::Kernel::kernelInit()
     {
         GPIO::RelayStation::InitInstance();
         GPIO::Strip::InitInstance();
-        GPIO::LCD::InitInstance(GPIO::LineLength2004);
+        GPIO::LCD::InitInstance();
+        Peripherique::HumidityStation::InitInstance();
         Peripherique::ThermiqueStation::InitInstance();
         Peripherique::UPSDevicePool::InitInstance();
         WWW::SessionManager::InitInstance();

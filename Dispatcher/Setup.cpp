@@ -13,6 +13,8 @@
 // Local definition files.
 //
 #include "Servus/Dispatcher/Setup.hpp"
+#include "Servus/Peripherique/HumiditySensor.hpp"
+#include "Servus/Peripherique/HumidityStation.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
 #include "Servus/Peripherique/UPSDevice.hpp"
@@ -155,6 +157,53 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                     relay->switchOn();
                 }
             }
+        }
+    }
+
+    // Process humidity sensors.
+    //
+    {
+        Peripherique::HumidityStation& humidityStation = Peripherique::HumidityStation::SharedInstance();
+
+        Value& jsonListOfDHT = jsonServus["DHT"];
+
+        if (jsonListOfDHT.IsNull() == true)
+        {
+            ReportInfo("[Dispatcher] Nothing defined for 'DHT11/DHT22'");
+        }
+        else
+        {
+            ReportInfo("[Dispatcher] Parsing 'DHT11/DHT22'");
+
+            assert(jsonListOfDHT.IsArray());
+
+            for (SizeType humidityIndex = 0;
+                 humidityIndex < jsonListOfDHT.Size();
+                 humidityIndex++)
+            {
+                Value& jsonHumidity = jsonListOfDHT[humidityIndex];
+
+                const std::string thermaToken   = jsonHumidity["Token"].GetString();
+                const unsigned int pinNumber    = jsonHumidity["PinNumber"].GetInt();
+                const float humidityEdge        = jsonHumidity["HumidityEdge"].GetDouble();
+                const float temperatureEdge     = jsonHumidity["TemperatureEdge"].GetDouble();
+                const std::string title         = jsonHumidity["Title"].GetString();
+
+                ReportInfo("[Dispatcher] Setup DHT11/DHT22 sensor '%s' on GPIO pin #%u and edges %0.1f/%0.1f",
+                        title.c_str(),
+                        pinNumber,
+                        humidityEdge,
+                        temperatureEdge);
+
+                humidityStation += new Peripherique::HumiditySensor(
+                        thermaToken,
+                        pinNumber,
+                        humidityEdge,
+                        temperatureEdge,
+                        title);
+            }
+
+            humidityStation.startService();
         }
     }
 

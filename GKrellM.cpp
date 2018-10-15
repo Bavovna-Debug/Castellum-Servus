@@ -954,7 +954,7 @@ GKrellM_SetupSession(struct GKrellM_Session* session)
                         "%u \"%s\" 0 0 0 %.3f\n",
                         GKRELLM_SENSOR_TEMPERATURE,
                         thermiqueSensor->deviceId.c_str(),
-                        thermiqueSensor->lastKnown.current);
+                        thermiqueSensor->lastKnownTemperature.current);
                 rc = GKrellM_SendStatement(session);
                 if (rc != 0)
                 {
@@ -1347,7 +1347,7 @@ GKrellM_UpdaterBell(void* arg)
                     "%u \"%s\" 0 0 0 %.3f\n",
                     GKRELLM_SENSOR_TEMPERATURE,
                     thermiqueSensor->deviceId.c_str(),
-                    thermiqueSensor->lastKnown.current);
+                    thermiqueSensor->lastKnownTemperature.current);
             rc = GKrellM_SendStatement(session);
             if (rc != 0)
             {
