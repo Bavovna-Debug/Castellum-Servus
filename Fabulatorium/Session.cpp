@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cstdbool>
 #include <cstdlib>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -139,11 +138,10 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
                 break;
             }
 
-            if (request.headerComplete == true)
+            if (request.datagramComplete() == true)
+            {
                 break;
-
-            /*if (request.payloadComplete == true)
-                break;*/
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.
@@ -222,32 +220,28 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
                         throw Fabulatorium::RejectDatagram("Missing fabulator");
                     }
 
+                    if (request.payloadLength() == 0)
+                    {
+                        response.reset();
+                        response["CSeq"] = expectedCSeq;
+                        response["Agent"] = Servus::SoftwareVersion;
+                        response["Reason"] = "Missing payload";
+                        response.generateResponse(RTSP::BadRequest);
+
+                        throw Fabulatorium::RejectDatagram("Missing payload");
+                    }
+
                     ReportDebug("[Fabulatorium] Received fabula from \"%s\"",
                             fabulatorName.c_str());
 
-                    std::stringstream stream(request.content);
-                    std::string line;
+                    Dispatcher::FabulaAviso* aviso = new Dispatcher::FabulaAviso(
+                            timestamp,
+                            fabulatorName,
+                            severityLevel,
+                            notificationFlag,
+                            request.payload());
 
-                    while (std::getline(stream, line, '\n'))
-                    {
-                        // Remove any special characters from the message and,
-                        // by the way, trim CR LF on the right.
-                        //
-                        line.erase(std::remove_if(
-                                line.begin(),
-                                line.end(),
-                                [](unsigned char c) { return std::iscntrl(c); }),
-                                line.end());
-
-                        Dispatcher::FabulaAviso* aviso = new Dispatcher::FabulaAviso(
-                                timestamp,
-                                fabulatorName,
-                                severityLevel,
-                                notificationFlag,
-                                line);
-
-                        queue.enqueueAviso(aviso);
-                    }
+                    queue.enqueueAviso(aviso);
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -286,8 +280,8 @@ Fabulatorium::Session::ThreadHandler(Fabulatorium::Session* session)
         {
             Communicator::Send(
                     session->socket(),
-                    response.payloadBuffer,
-                    response.payloadLength);
+                    response.contentBuffer,
+                    response.contentLength);
         }
         catch (...)
         { }

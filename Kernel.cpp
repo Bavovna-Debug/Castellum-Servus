@@ -5,14 +5,15 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <wiringPi.h>
 
 // Common definition files.
 //
 #include "Communicator/IP.hpp"
-#include "GPIO/GPIO.hpp"
-#include "GPIO/LCD.hpp"
-#include "GPIO/Relay.hpp"
-#include "GPIO/Strip.hpp"
+#include "Raspberry/GPIO.hpp"
+#include "Raspberry/LCD.hpp"
+#include "Raspberry/LEDStrip.hpp"
+#include "Raspberry/Relay.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
 #include "Toolkit/Report.h"
@@ -26,8 +27,11 @@
 #include "Servus/Kernel.hpp"
 #include "Servus/Dispatcher/Communicator.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
+#include "Servus/Peripherique/HumiditySensor.hpp"
+#include "Servus/Peripherique/HumidityStation.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 #include "Servus/Peripherique/ThermiqueStation.hpp"
+#include "Servus/Peripherique/UPSDevicePool.hpp"
 #include "Servus/WWW/Home.hpp"
 #include "Servus/WWW/SessionManager.hpp"
 
@@ -57,9 +61,11 @@ Workspace::Kernel::SharedInstance()
 }
 
 Workspace::Kernel::Kernel() :
-Inherited()
+Inherited(Servus::InstanceName)
 {
     this->timestampOfStart = new Toolkit::Timestamp();
+
+    this->systemName = "Servus";
 }
 
 /**
@@ -71,7 +77,17 @@ Inherited()
 void
 Workspace::Kernel::kernelInit()
 {
-    int rc = GKrellM_Start(&this->gkrellm);
+    int rc;
+
+    rc = wiringPiSetup();
+    if (rc == -1)
+    {
+        ReportError("[Kernel] Cannot setup wiringPi library - quit");
+
+        throw std::runtime_error("Cannot setup wiringPi library");
+    }
+
+    rc = GKrellM_Start(&this->gkrellm);
     if (rc != 0)
     {
         ReportError("[Kernel] Cannot start GKrellM service - quit");
@@ -81,10 +97,12 @@ Workspace::Kernel::kernelInit()
 
     try
     {
-        GPIO::RelayStation::InitInstance();
-        GPIO::Strip::InitInstance();
-        GPIO::LCD::InitInstance(GPIO::LineLength2004);
+        Raspberry::RelayStation::InitInstance();
+        Raspberry::LEDStrip::InitInstance();
+        Raspberry::LCD::InitInstance();
+        Peripherique::HumidityStation::InitInstance();
         Peripherique::ThermiqueStation::InitInstance();
+        Peripherique::UPSDevicePool::InitInstance();
         WWW::SessionManager::InitInstance();
     }
     catch (std::exception& exception)
@@ -144,75 +162,13 @@ const unsigned int cols[4] = { 16, 17, 18, 19 }; //{ 36, 11, 12, 35 };
 void
 Workspace::Kernel::kernelExec()
 {
-#if 0
-    {
-        ReportInfo("ZZZ");
-
-        unsigned int row, col, value;
-
-        for (;;)
-        {
-            usleep(200000);
-
-            for (col = 0; col < 4; col++)
-            {
-                GPIO_Unexport(cols[col]);
-                GPIO_Export(cols[col]);
-                GPIO_Direction(cols[col], GPIO_OUT);
-                GPIO_Set(cols[col], GPIO_LOW);
-            }
-
-            for (row = 0; row < 4; row++)
-            {
-                GPIO_Unexport(rows[row]);
-                GPIO_Export(rows[row]);
-                GPIO_Direction(rows[row], GPIO_IN);
-                GPIO_Edge(rows[row], GPIO_EDGE_FALLING);
-            }
-
-            for (row = 0; row < 4; row++)
-            {
-                GPIO_Get(rows[row], &value);
-                if (value == GPIO_LOW)
-                {
-                    ReportInfo("ZZZ row=%u", row);
-                    break;
-                }
-            }
-
-            if (row == 4)
-                continue;
-
-            for (col = 0; col < 4; col++)
-            {
-                GPIO_Direction(cols[col], GPIO_IN);
-                //GPIO_Edge(cols[col], GPIO_EDGE_RISING);
-            }
-
-            //GPIO_Direction(rows[row], GPIO_OUT);
-            GPIO_Set(rows[row], GPIO_HIGH);
-
-            for (col = 0; col < 4; col++)
-            {
-                GPIO_Get(cols[col], &value);
-                if (value == GPIO_HIGH)
-                {
-                    ReportInfo("ZZZ col=%u", col);
-                    break;
-                }
-            }
-        }
-    }
-#endif
-
     try
     {
-        GPIO::Strip& stripService = GPIO::Strip::SharedInstance();
+        Raspberry::LEDStrip::SharedInstance().startService();
 
-        stripService.startService();
+        Dispatcher::Communicator::SharedInstance().start();
 
-        Dispatcher::Communicator& communicator = Dispatcher::Communicator::SharedInstance();
-        communicator.start();
+        Peripherique::UPSDevicePool::SharedInstance().start();
 
         this->http->startService();
     }

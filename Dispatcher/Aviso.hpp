@@ -31,6 +31,10 @@ namespace Dispatcher
 
         virtual void
         prepare(RTSP::Datagram&) const;
+
+        virtual std::string
+        payload()
+        { return ""; }
     };
 
     class FabulaAviso : public Dispatcher::Aviso
@@ -53,9 +57,30 @@ namespace Dispatcher
 
         virtual void
         prepare(RTSP::Datagram&) const;
+
+        virtual std::string
+        payload()
+        { return this->message; }
     };
 
-    class TemperatureAviso : public Dispatcher::Aviso
+    class DHTHumidityAviso : public Dispatcher::Aviso
+    {
+        typedef Dispatcher::Aviso Inherited;
+
+    public:
+        std::string sensorToken;
+        float       humidity;
+
+    public:
+        DHTHumidityAviso(
+            const std::string&  sensorToken,
+            const float         humidity);
+
+        virtual void
+        prepare(RTSP::Datagram&) const;
+    };
+
+    class DHTTemperatureAviso : public Dispatcher::Aviso
     {
         typedef Dispatcher::Aviso Inherited;
 
@@ -64,7 +89,24 @@ namespace Dispatcher
         float       temperature;
 
     public:
-        TemperatureAviso(
+        DHTTemperatureAviso(
+            const std::string&  sensorToken,
+            const float         temperature);
+
+        virtual void
+        prepare(RTSP::Datagram&) const;
+    };
+
+    class DSTemperatureAviso : public Dispatcher::Aviso
+    {
+        typedef Dispatcher::Aviso Inherited;
+
+    public:
+        std::string sensorToken;
+        float       temperature;
+
+    public:
+        DSTemperatureAviso(
             const std::string&  sensorToken,
             const float         temperature);
 

@@ -10,17 +10,17 @@ LINK := g++
 INCLUDES += -I ../
 
 LIBS += -L../Communicator/
-LIBS += -L../GPIO/
 LIBS += -L../HTTP/
 LIBS += -L../MODBUS/
+LIBS += -L../Raspberry/
 LIBS += -L../RTSP/
 LIBS += -L../Toolkit/
 
 LIBS += -lCryptography
-LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lMODBUS
+LIBS += -lRaspberry
 LIBS += -lRTSP
 LIBS += -lSignals
 LIBS += -lToolkit
@@ -31,7 +31,7 @@ LIBS += -lrt
 LIBS += -lssl
 LIBS += -lcrypto
 LIBS += -lwiringPi
-LIBS += -lwiringPiDev
+#LIBS += -lwiringPiDev
 
 CFLAGS += -O2
 CFLAGS += -std=c99
@@ -50,7 +50,7 @@ CFLAGS += -Wunused-value
 CFLAGS += -Wwrite-strings
 
 CPPFLAGS += -O2
-CPPFLAGS += -std=c++14
+CPPFLAGS += -std=c++11
 CPPFLAGS += -Wall
 CPPFLAGS += -Wextra
 CPPFLAGS += -Wdeprecated-declarations
@@ -67,7 +67,7 @@ CPPFLAGS += -Wwrite-strings
 OBJECTS_ROOT          := Configuration.o GKrellM.o Kernel.o Main.o Parse.o
 OBJECTS_DISPATCHER    := Dispatcher/Aviso.o Dispatcher/Communicator.o Dispatcher/Queue.o Dispatcher/Setup.o
 OBJECTS_FABULATORIUM  := Fabulatorium/Fabulator.o Fabulatorium/Listener.o Fabulatorium/Session.o
-OBJECTS_PÉRIPHÉRIQUE  := Peripherique/ThermiqueSensor.o Peripherique/ThermiqueStation.o
+OBJECTS_PÉRIPHÉRIQUE  := Peripherique/HumiditySensor.o Peripherique/HumidityStation.o Peripherique/ThermiqueSensor.o Peripherique/ThermiqueStation.o Peripherique/UPSDevice.o Peripherique/UPSDevicePool.o
 OBJECTS_WWW           := WWW/Home.o WWW/Relay.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Servus
@@ -119,10 +119,22 @@ Fabulatorium/Session.o: Fabulatorium/Session.cpp
 
 # ******************************************************************************
 
+Peripherique/HumiditySensor.o: Peripherique/HumiditySensor.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Peripherique/HumidityStation.o: Peripherique/HumidityStation.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
 Peripherique/ThermiqueSensor.o: Peripherique/ThermiqueSensor.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Peripherique/ThermiqueStation.o: Peripherique/ThermiqueStation.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Peripherique/UPSDevice.o: Peripherique/UPSDevice.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Peripherique/UPSDevicePool.o: Peripherique/UPSDevicePool.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************

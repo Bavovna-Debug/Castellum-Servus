@@ -1,5 +1,9 @@
 #pragma once
 
+// System definition files.
+//
+#include <string>
+
 // Common definition files.
 //
 #include "HTTP/Service.hpp"
@@ -25,6 +29,8 @@ namespace Workspace
          * (in seconds since 1970-01-01 00:00:00 GMT).
          */
         Toolkit::Timestamp*     timestampOfStart;
+
+        std::string             systemName;
 
         struct GKrellM_Service  gkrellm;
         MODBUS::Service*        modbus;

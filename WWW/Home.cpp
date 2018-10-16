@@ -1,12 +1,15 @@
 // System definition files.
 //
 #include <cstdbool>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 // Common definition files.
 //
-#include "GPIO/Exception.hpp"
-#include "GPIO/Relay.hpp"
+#include "Raspberry/Exception.hpp"
+#include "Raspberry/LCD.hpp"
+#include "Raspberry/Relay.hpp"
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
@@ -86,7 +89,9 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             { // HTML::Title
                 HTML::Title title(instance);
 
-                title.plain("Servus");
+                Workspace::Kernel& kernel = Workspace::Kernel::SharedInstance();
+
+                title.plain(kernel.systemName);
             } // HTML::Title
 
             head.meta("Content-Type", "text/html; charset=utf-8");
@@ -207,11 +212,13 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
     {
         const unsigned long relayIndex = connection[WWW::SwitchRelay];
 
-        GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
+        Raspberry::RelayStation& relayStation = Raspberry::RelayStation::SharedInstance();
+
+        Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
         try
         {
-            GPIO::Relay* relay = relayStation[relayIndex];
+            Raspberry::Relay* relay = relayStation[relayIndex];
 
             try
             {
@@ -220,18 +227,42 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
                 if (relayState == WWW::RelayStateDown)
                 {
                     relay->switchOff();
+
+                    std::ostringstream stringStream;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(4) << "OFF";
+
+                    lcd << stringStream.str();
                 }
                 else if (relayState == WWW::RelayStateUp)
                 {
                     relay->switchOn();
+
+                    std::ostringstream stringStream;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                    stringStream << std::setiosflags(std::ios::left);
+                    stringStream << std::setfill(' ') << std::setw(4) << "ON";
+
+                    lcd << stringStream.str();
                 }
             }
             catch (HTTP::ArgumentDoesNotExist&)
             {
                 relay->switchOver();
+
+                std::ostringstream stringStream;
+                stringStream << std::setiosflags(std::ios::left);
+                stringStream << std::setfill(' ') << std::setw(16) << relay->title;
+                stringStream << std::setiosflags(std::ios::left);
+                stringStream << std::setfill(' ') << std::setw(4) << "OVER";
+
+                lcd << stringStream.str();
             }
         }
-        catch (GPIO::Exception)
+        catch (Raspberry::Exception)
         {
             instance.errorMessage("Relais #%s ist nicht bekannt", relayIndex);
         }
