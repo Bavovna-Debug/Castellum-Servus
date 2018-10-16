@@ -11,7 +11,7 @@
 
 namespace Fabulatorium
 {
-    static const unsigned int MaximalFabulaLength = 1024;
+    static const unsigned int MaximalFabulaLength = 64 * 1024;
 
     class Listener : public TCP::Service
     {

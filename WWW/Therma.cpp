@@ -103,49 +103,51 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(thermiqueSensor->name);
+                        tableDataCell.plain(thermiqueSensor->title);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                thermiqueSensor->lastKnown.lowest);
+                                thermiqueSensor->lastKnownTemperature.lowest);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
                         tableDataCell.plain("[-%4.2f &#x2103;]",
-                                thermiqueSensor->lastKnown.current - thermiqueSensor->lastKnown.lowest);
+                                thermiqueSensor->lastKnownTemperature.current -
+                                thermiqueSensor->lastKnownTemperature.lowest);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                thermiqueSensor->lastKnown.current);
+                                thermiqueSensor->lastKnownTemperature.current);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("[+%4.2f &#x2103;]",
-                                thermiqueSensor->lastKnown.highest - thermiqueSensor->lastKnown.current);
+                                thermiqueSensor->lastKnownTemperature.highest -
+                                thermiqueSensor->lastKnownTemperature.current);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("%4.2f &#x2103;",
-                                thermiqueSensor->lastKnown.highest);
+                                thermiqueSensor->lastKnownTemperature.highest);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
 
                         tableDataCell.plain("%3.2f &#x2103;",
-                                thermiqueSensor->edge);
+                                thermiqueSensor->temperatureEdge);
                     }
                 }
             }

@@ -9,18 +9,22 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <system_error>
 #include <thread>
 #include <vector>
 
 // Common definition files.
 //
-#include "GPIO/LCD.hpp"
+#include "Raspberry/LCD.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
+#include "Servus/Configuration.hpp"
 #include "Servus/Dispatcher/Aviso.hpp"
 #include "Servus/Dispatcher/Queue.hpp"
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
@@ -76,7 +80,7 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
 {
     ReportNotice("[Périphérique] Thermique station thread has been started");
 
-    GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+    Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
     thermiqueStation->getListOfSensors();
 
@@ -94,18 +98,40 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
 
                 sensor->refresh();
 
-                if (sensor->changed == true)
+                if (sensor->changedTemperature == true)
                 {
-                    sensor->changed = false;
+                    sensor->changedTemperature = false;
 
-                    Dispatcher::TemperatureAviso* aviso = new Dispatcher::TemperatureAviso(
+                    Dispatcher::DSTemperatureAviso* aviso = new Dispatcher::DSTemperatureAviso(
                             sensor->token,
                             sensor->temperature);
 
                     Dispatcher::Queue& queue = Dispatcher::Queue::SharedInstance();
 
                     queue.enqueueAviso(aviso);
+
+                    try
+                    {
+                        ReportDebug("[Périphérique] Refreshing LCD");
+
+                        std::ostringstream stringStream;
+                        stringStream << std::setiosflags(std::ios::left);
+                        stringStream << std::setfill(' ') << std::setw(lcd.numberOfRows - 4);
+                        stringStream << sensor->title;
+                        stringStream << std::fixed << std::setprecision(1);
+                        stringStream << sensor->temperature;
+
+                        lcd << stringStream.str();
+                    }
+                    catch (std::exception &exception)
+                    {
+                        ReportWarning("[Périphérique] Exception on LCD refresh: %s",
+                                exception.what());
+                    }
                 }
+
+                std::this_thread::sleep_for(
+                        std::chrono::milliseconds { Servus::WaitBetweenDSSensors } );
             }
         }
         catch (std::exception &exception)
@@ -114,17 +140,8 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
                     exception.what());
         }
 
-        ReportDebug("[Périphérique] Refreshing LCD");
-
-        try
-        {
-            lcd.refresh();
-        }
-        catch (std::exception &exception)
-        {
-            ReportWarning("[Périphérique] Exception on LCD refresh: %s",
-                    exception.what());
-        }
+        std::this_thread::sleep_for(
+                std::chrono::milliseconds { Servus::WaitAfterAllDSSensors } );
     }
 
     ReportWarning("[Périphérique] Thermique station thread is going to quit");
@@ -133,7 +150,8 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
 Peripherique::ThermiqueStation&
 Peripherique::ThermiqueStation::operator+=(Peripherique::ThermiqueSensor* sensor)
 {
-    ReportInfo("[Périphérique] Defined thermique sensor '%s'", sensor->name.c_str());
+    ReportInfo("[Périphérique] Defined thermique sensor '%s'",
+            sensor->title.c_str());
 
     this->sensors.push_back(sensor);
 
@@ -158,11 +176,11 @@ Peripherique::ThermiqueStation::getListOfSensors()
     DIR             *directory;
     struct dirent   *directoryEntry;
 
-    directory = opendir(Therma::SensorsPath.c_str());
+    directory = opendir(Raspberry::DS1820::DevicesPath.c_str());
     if (directory == NULL)
     {
         ReportError("[Périphérique] Cannot get access to '%s': errno=%d",
-                Therma::SensorsPath.c_str(),
+                Raspberry::DS1820::DevicesPath.c_str(),
                 errno);
 
         throw;
@@ -189,7 +207,7 @@ Peripherique::ThermiqueStation::getListOfSensors()
         if (directoryEntry->d_type != DT_LNK)
             continue;
 
-        if (strlen(directoryEntry->d_name) != Therma::DeviceIdNameLength)
+        if (strlen(directoryEntry->d_name) != Raspberry::DS1820::DeviceIdNameLength)
             continue;
 
         Peripherique::ThermiqueSensor* sensor = NULL;
@@ -206,10 +224,10 @@ Peripherique::ThermiqueStation::getListOfSensors()
         if (sensor == NULL)
         {
             sensor = new Peripherique::ThermiqueSensor(
-                    directoryEntry->d_name,
                     "",
-                    Peripherique::DefaultThermiqueSensorName,
-                    0);
+                    directoryEntry->d_name,
+                    0,
+                    Peripherique::DefaultThermiqueSensorName);
 
             *this += sensor;
 

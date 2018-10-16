@@ -7,23 +7,33 @@
 
 // Common definition files.
 //
-#include "Raspberry/DS1820.hpp"
+#include "Raspberry/DHT22.hpp"
 
 namespace Peripherique
 {
     /**
-     * Thermique sensor.
+     * Humidity sensor.
      */
-    class ThermiqueSensor : public Raspberry::DS1820::Sensor
+    class HumiditySensor : public Raspberry::DHT22::Sensor
     {
-        typedef Raspberry::DS1820::Sensor Inherited;
+        typedef Raspberry::DHT22::Sensor Inherited;
 
     public:
         std::string token;
+        float       humidityEdge;
         float       temperatureEdge;
         std::string title;
 
+        bool        changedHumidity;
         bool        changedTemperature;
+
+        struct
+        {
+            float   current;
+            float   lowest;
+            float   highest;
+        }
+        lastKnownHumidity;
 
         struct
         {
@@ -34,9 +44,10 @@ namespace Peripherique
         lastKnownTemperature;
 
     public:
-        ThermiqueSensor(
+        HumiditySensor(
             const std::string&  token,
-            const std::string&  deviceId,
+            const unsigned int  gpioPinNumber,
+            const float         humidityEdge,
             const float         temperatureEdge,
             const std::string&  title);
 

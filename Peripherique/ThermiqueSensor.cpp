@@ -1,22 +1,12 @@
 // System definition files.
 //
-#include <dirent.h>
-#include <endian.h>
-#include <sys/types.h>
-#include <cerrno>
 #include <cstdbool>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <system_error>
-#include <thread>
-#include <vector>
 
 // Common definition files.
 //
-#include "GPIO/LCD.hpp"
-#include "GPIO/Therma.hpp"
+#include "Raspberry/DS1820.hpp"
+#include "Raspberry/Raspberry.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
@@ -24,20 +14,20 @@
 #include "Servus/Peripherique/ThermiqueSensor.hpp"
 
 Peripherique::ThermiqueSensor::ThermiqueSensor(
-    const std::string&  deviceId,
     const std::string&  token,
-    const std::string&  name,
-    const float         edge) :
+    const std::string&  deviceId,
+    const float         temperatureEdge,
+    const std::string&  title) :
 Inherited(deviceId),
 token(token),
-name(name),
-edge(edge)
+temperatureEdge(temperatureEdge),
+title(title)
 {
-    this->lastKnown.current = 0.0;
-    this->lastKnown.lowest = Therma::DefaultMinimalThemperature;
-    this->lastKnown.highest = Therma::DefaultMaximalThemperature;
+    this->lastKnownTemperature.current = 0.0;
+    this->lastKnownTemperature.lowest = Raspberry::DefaultMinimalThemperature;
+    this->lastKnownTemperature.highest = Raspberry::DefaultMaximalThemperature;
 
-    this->changed = false;
+    this->changedTemperature = false;
 }
 
 void
@@ -45,31 +35,31 @@ Peripherique::ThermiqueSensor::refresh()
 {
     Inherited::refresh();
 
-    if (this->temperature < this->lastKnown.lowest)
+    if (this->temperature < this->lastKnownTemperature.lowest)
     {
-        this->lastKnown.lowest = this->temperature;
+        this->lastKnownTemperature.lowest = this->temperature;
     }
 
-    if (this->temperature > this->lastKnown.highest)
+    if (this->temperature > this->lastKnownTemperature.highest)
     {
-        this->lastKnown.highest = this->temperature;
+        this->lastKnownTemperature.highest = this->temperature;
     }
 
-    if (this->lastKnown.current != this->temperature)
+    if (this->lastKnownTemperature.current != this->temperature)
     {
-        if ((this->temperature - this->lastKnown.current >= this->edge) ||
-            (this->temperature - this->lastKnown.current <= -(this->edge)))
+        if ((this->temperature - this->lastKnownTemperature.current >= this->temperatureEdge) ||
+            (this->temperature - this->lastKnownTemperature.current <= -(this->temperatureEdge)))
         {
             ReportDebug("[Périphérique] Temperature of '%s' has changed: %.2f -> %.2f (%.2f / %.2f)",
                     this->name.c_str(),
-                    this->lastKnown.current,
+                    this->lastKnownTemperature.current,
                     this->temperature,
-                    this->lastKnown.lowest,
-                    this->lastKnown.highest);
+                    this->lastKnownTemperature.lowest,
+                    this->lastKnownTemperature.highest);
 
-            this->lastKnown.current = this->temperature;
+            this->lastKnownTemperature.current = this->temperature;
 
-            this->changed = true;
+            this->changedTemperature = true;
         }
     }
 }

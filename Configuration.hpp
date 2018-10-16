@@ -7,12 +7,14 @@
 
 namespace Servus
 {
-    static const std::string SoftwareVersion = "Servus 0.3 [180602]";
+    static const std::string InstanceName       = "servus";
+
+    static const std::string SoftwareVersion    = "Servus 0.4 [181016]";
 
     static const unsigned DefaultMODBUSPortNumberIPv4               = 502;
 
     static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
-    static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
+    static const unsigned DefaultHTTPKeepAliveSession               = 3600;     /**< Seconds. */
 
     static const unsigned DefaultPrimusSleepIfRejectedByPrimus      = 120;      /**< Seconds. */
     static const unsigned DefaultPrimusReconnectInterval            = 5;        /**< Seconds. */
@@ -22,6 +24,10 @@ namespace Servus
     static const unsigned DefaultListenerWaitForTransmissionCompletion = 500;   /**< Milliseconds. */
 
     static const unsigned WaitBeforeNetworkRetry                    = 60;       /**< Seconds. */
+    static const unsigned WaitBetweenDHTSensors                     = 1000;     /**< Milliseconds. */
+    static const unsigned WaitAfterAllDHTSensors                    = 5000;     /**< Milliseconds. */
+    static const unsigned WaitBetweenDSSensors                      = 1000;     /**< Milliseconds. */
+    static const unsigned WaitAfterAllDSSensors                     = 1000;     /**< Milliseconds. */
 
     class Configuration
     {
@@ -43,10 +49,10 @@ namespace Servus
         http;
 
     public:
-        static Configuration&
+        static Servus::Configuration&
         InitInstance(const std::string& configurationFilePath);
 
-        static Configuration&
+        static Servus::Configuration&
         SharedInstance();
 
     private:
