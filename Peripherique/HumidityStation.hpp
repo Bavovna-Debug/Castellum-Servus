@@ -45,7 +45,7 @@ namespace Peripherique
         ThreadHandler(Peripherique::HumidityStation*);
 
     public:
-        HumidityStation&
+        Peripherique::HumidityStation&
         operator+=(Peripherique::HumiditySensor*);
 
         Peripherique::HumiditySensor*

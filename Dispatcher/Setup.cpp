@@ -165,7 +165,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
     {
         Peripherique::HumidityStation& humidityStation = Peripherique::HumidityStation::SharedInstance();
 
-        Value& jsonListOfDHT = jsonServus["DHT"];
+        Value& jsonListOfDHT = jsonServus["DHT22"];
 
         if (jsonListOfDHT.IsNull() == true)
         {
@@ -212,7 +212,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
     {
         Peripherique::ThermiqueStation& thermiqueStation = Peripherique::ThermiqueStation::SharedInstance();
 
-        Value& jsonListOfDS = jsonServus["DS"];
+        Value& jsonListOfDS = jsonServus["DS1820"];
 
         if (jsonListOfDS.IsNull() == true)
         {

@@ -150,9 +150,6 @@ Workspace::Kernel::kernelInit()
     Toolkit::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);
 }
 
-const unsigned int rows[4] = { 05, 06, 12, 13 }; //{ 29, 31, 32, 33 };
-const unsigned int cols[4] = { 16, 17, 18, 19 }; //{ 36, 11, 12, 35 };
-
 /**
  * @brief   2nd part of application kernel - start all subcomponents.
  *
@@ -164,6 +161,8 @@ Workspace::Kernel::kernelExec()
 {
     try
     {
+        Raspberry::LCD::SharedInstance() << "Servus is running...";
+
         Raspberry::LEDStrip::SharedInstance().startService();
 
         Dispatcher::Communicator::SharedInstance().start();

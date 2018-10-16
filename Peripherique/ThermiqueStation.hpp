@@ -47,7 +47,7 @@ namespace Peripherique
         ThreadHandler(Peripherique::ThermiqueStation*);
 
     public:
-        ThermiqueStation&
+        Peripherique::ThermiqueStation&
         operator+=(Peripherique::ThermiqueSensor*);
 
         Peripherique::ThermiqueSensor*
