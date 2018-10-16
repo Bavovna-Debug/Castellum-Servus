@@ -216,11 +216,11 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
 
         if (jsonListOfDS.IsNull() == true)
         {
-            ReportInfo("[Dispatcher] Nothing defined for 'DS18B20/DS18S20'");
+            ReportInfo("[Dispatcher] Nothing defined for 'DS1820'");
         }
         else
         {
-            ReportInfo("[Dispatcher] Parsing 'DS18B20/DS18S20'");
+            ReportInfo("[Dispatcher] Parsing 'DS1820'");
 
             assert(jsonListOfDS.IsArray());
 
@@ -235,7 +235,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                 const float temperatureEdge     = jsonSensor["TemperatureEdge"].GetDouble();
                 const std::string title         = jsonSensor["Title"].GetString();
 
-                ReportInfo("[Dispatcher] Setup DS18B20/DS18S20 sensor '%s' with device id %s and edge %0.1f",
+                ReportInfo("[Dispatcher] Setup DS1820 sensor '%s' with device id %s and edge %0.1f",
                         title.c_str(),
                         deviceId.c_str(),
                         temperatureEdge);

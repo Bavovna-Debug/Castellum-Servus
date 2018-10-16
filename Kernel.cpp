@@ -12,8 +12,8 @@
 #include "Communicator/IP.hpp"
 #include "Raspberry/GPIO.hpp"
 #include "Raspberry/LCD.hpp"
+#include "Raspberry/LEDStrip.hpp"
 #include "Raspberry/Relay.hpp"
-#include "Raspberry/Strip.hpp"
 #include "HTTP/Service.hpp"
 #include "MODBUS/Service.hpp"
 #include "Toolkit/Report.h"
@@ -98,7 +98,7 @@ Workspace::Kernel::kernelInit()
     try
     {
         Raspberry::RelayStation::InitInstance();
-        Raspberry::Strip::InitInstance();
+        Raspberry::LEDStrip::InitInstance();
         Raspberry::LCD::InitInstance();
         Peripherique::HumidityStation::InitInstance();
         Peripherique::ThermiqueStation::InitInstance();
@@ -164,7 +164,7 @@ Workspace::Kernel::kernelExec()
 {
     try
     {
-        Raspberry::Strip::SharedInstance().startService();
+        Raspberry::LEDStrip::SharedInstance().startService();
 
         Dispatcher::Communicator::SharedInstance().start();
 

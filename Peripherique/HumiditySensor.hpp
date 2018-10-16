@@ -7,16 +7,16 @@
 
 // Common definition files.
 //
-#include "Raspberry/DHT.hpp"
+#include "Raspberry/DHT22.hpp"
 
 namespace Peripherique
 {
     /**
      * Humidity sensor.
      */
-    class HumiditySensor : public Raspberry::DHT
+    class HumiditySensor : public Raspberry::DHT22::Sensor
     {
-        typedef Raspberry::DHT Inherited;
+        typedef Raspberry::DHT22::Sensor Inherited;
 
     public:
         std::string token;

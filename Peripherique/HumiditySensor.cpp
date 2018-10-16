@@ -5,7 +5,7 @@
 
 // Common definition files.
 //
-#include "Raspberry/DHT.hpp"
+#include "Raspberry/DHT22.hpp"
 #include "Raspberry/LCD.hpp"
 #include "Raspberry/Raspberry.hpp"
 #include "Toolkit/Report.h"

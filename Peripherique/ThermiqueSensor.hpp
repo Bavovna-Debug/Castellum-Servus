@@ -14,9 +14,9 @@ namespace Peripherique
     /**
      * Thermique sensor.
      */
-    class ThermiqueSensor : public Raspberry::DS1820
+    class ThermiqueSensor : public Raspberry::DS1820::Sensor
     {
-        typedef Raspberry::DS1820 Inherited;
+        typedef Raspberry::DS1820::Sensor Inherited;
 
     public:
         std::string token;

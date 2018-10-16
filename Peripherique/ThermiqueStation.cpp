@@ -176,11 +176,11 @@ Peripherique::ThermiqueStation::getListOfSensors()
     DIR             *directory;
     struct dirent   *directoryEntry;
 
-    directory = opendir(Raspberry::DevicesPath.c_str());
+    directory = opendir(Raspberry::DS1820::DevicesPath.c_str());
     if (directory == NULL)
     {
         ReportError("[Périphérique] Cannot get access to '%s': errno=%d",
-                Raspberry::DevicesPath.c_str(),
+                Raspberry::DS1820::DevicesPath.c_str(),
                 errno);
 
         throw;
@@ -207,7 +207,7 @@ Peripherique::ThermiqueStation::getListOfSensors()
         if (directoryEntry->d_type != DT_LNK)
             continue;
 
-        if (strlen(directoryEntry->d_name) != Raspberry::DeviceIdNameLength)
+        if (strlen(directoryEntry->d_name) != Raspberry::DS1820::DeviceIdNameLength)
             continue;
 
         Peripherique::ThermiqueSensor* sensor = NULL;
