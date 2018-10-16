@@ -1,6 +1,6 @@
 // Common definition files.
 //
-#include "GPIO/Relay.hpp"
+#include "Raspberry/Relay.hpp"
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
@@ -59,7 +59,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                 }
             }
 
-            GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
+            Raspberry::RelayStation& relayStation = Raspberry::RelayStation::SharedInstance();
 
             {
                 HTML::TableBody tableBody(instance);
@@ -68,7 +68,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                      relayIndex < relayStation.size();
                      relayIndex++)
                 {
-                    GPIO::Relay* relay = relayStation[relayIndex];
+                    Raspberry::Relay* relay = relayStation[relayIndex];
 
                     HTML::TableRow tableRow(instance);
 

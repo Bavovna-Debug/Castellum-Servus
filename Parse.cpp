@@ -7,7 +7,7 @@
 
 // Common definition files.
 //
-#include "GPIO/LCD.hpp"
+#include "Raspberry/LCD.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
@@ -31,7 +31,7 @@ Servus::Configuration::load()
         // Display block.
         //
         {
-            GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+            Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
             try
             {

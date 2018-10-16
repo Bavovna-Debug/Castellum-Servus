@@ -24,6 +24,10 @@ namespace Servus
     static const unsigned DefaultListenerWaitForTransmissionCompletion = 500;   /**< Milliseconds. */
 
     static const unsigned WaitBeforeNetworkRetry                    = 60;       /**< Seconds. */
+    static const unsigned WaitBetweenDHTSensors                     = 1000;     /**< Milliseconds. */
+    static const unsigned WaitAfterAllDHTSensors                    = 5000;     /**< Milliseconds. */
+    static const unsigned WaitBetweenDSSensors                      = 1000;     /**< Milliseconds. */
+    static const unsigned WaitAfterAllDSSensors                     = 1000;     /**< Milliseconds. */
 
     class Configuration
     {
@@ -45,10 +49,10 @@ namespace Servus
         http;
 
     public:
-        static Configuration&
+        static Servus::Configuration&
         InitInstance(const std::string& configurationFilePath);
 
-        static Configuration&
+        static Servus::Configuration&
         SharedInstance();
 
     private:

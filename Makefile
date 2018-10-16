@@ -10,17 +10,17 @@ LINK := g++
 INCLUDES += -I ../
 
 LIBS += -L../Communicator/
-LIBS += -L../GPIO/
 LIBS += -L../HTTP/
 LIBS += -L../MODBUS/
+LIBS += -L../Raspberry/
 LIBS += -L../RTSP/
 LIBS += -L../Toolkit/
 
 LIBS += -lCryptography
-LIBS += -lGPIO
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lMODBUS
+LIBS += -lRaspberry
 LIBS += -lRTSP
 LIBS += -lSignals
 LIBS += -lToolkit

@@ -5,9 +5,9 @@
 
 // Common definition files.
 //
-#include "GPIO/DHT.hpp"
-#include "GPIO/LCD.hpp"
-#include "GPIO/Therma.hpp"
+#include "Raspberry/DHT.hpp"
+#include "Raspberry/LCD.hpp"
+#include "Raspberry/Raspberry.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
@@ -27,12 +27,12 @@ temperatureEdge(temperatureEdge),
 title(title)
 {
     this->lastKnownHumidity.current = 0.0;
-    this->lastKnownHumidity.lowest = Therma::DefaultMinimalHumidity;
-    this->lastKnownHumidity.highest = Therma::DefaultMaximalHumidity;
+    this->lastKnownHumidity.lowest = Raspberry::DefaultMinimalHumidity;
+    this->lastKnownHumidity.highest = Raspberry::DefaultMaximalHumidity;
 
     this->lastKnownTemperature.current = 0.0;
-    this->lastKnownTemperature.lowest = Therma::DefaultMinimalThemperature;
-    this->lastKnownTemperature.highest = Therma::DefaultMaximalThemperature;
+    this->lastKnownTemperature.lowest = Raspberry::DefaultMinimalThemperature;
+    this->lastKnownTemperature.highest = Raspberry::DefaultMaximalThemperature;
 
     this->changedHumidity = false;
     this->changedTemperature = false;

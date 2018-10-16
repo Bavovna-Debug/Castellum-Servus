@@ -10,7 +10,7 @@
 
 // Common definition files.
 //
-#include "GPIO/LCD.hpp"
+#include "Raspberry/LCD.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
@@ -72,7 +72,7 @@ Peripherique::HumidityStation::ThreadHandler(Peripherique::HumidityStation* humi
 {
     ReportNotice("[Périphérique] Humidity station thread has been started");
 
-    GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+    Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
     for (;;)
     {

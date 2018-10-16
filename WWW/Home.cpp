@@ -7,9 +7,9 @@
 
 // Common definition files.
 //
-#include "GPIO/Exception.hpp"
-#include "GPIO/LCD.hpp"
-#include "GPIO/Relay.hpp"
+#include "Raspberry/Exception.hpp"
+#include "Raspberry/LCD.hpp"
+#include "Raspberry/Relay.hpp"
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
@@ -212,13 +212,13 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
     {
         const unsigned long relayIndex = connection[WWW::SwitchRelay];
 
-        GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
+        Raspberry::RelayStation& relayStation = Raspberry::RelayStation::SharedInstance();
 
-        GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+        Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
         try
         {
-            GPIO::Relay* relay = relayStation[relayIndex];
+            Raspberry::Relay* relay = relayStation[relayIndex];
 
             try
             {
@@ -262,7 +262,7 @@ WWW::Site::processRelays(HTTP::Connection& connection, HTML::Instance& instance)
                 lcd << stringStream.str();
             }
         }
-        catch (GPIO::Exception)
+        catch (Raspberry::Exception)
         {
             instance.errorMessage("Relais #%s ist nicht bekannt", relayIndex);
         }

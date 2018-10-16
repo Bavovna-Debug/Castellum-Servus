@@ -18,7 +18,7 @@
 
 // Common definition files.
 //
-#include "GPIO/LCD.hpp"
+#include "Raspberry/LCD.hpp"
 #include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
@@ -80,7 +80,7 @@ Peripherique::ThermiqueStation::ThreadHandler(Peripherique::ThermiqueStation* th
 {
     ReportNotice("[Périphérique] Thermique station thread has been started");
 
-    GPIO::LCD &lcd = GPIO::LCD::SharedInstance();
+    Raspberry::LCD &lcd = Raspberry::LCD::SharedInstance();
 
     thermiqueStation->getListOfSensors();
 
@@ -176,11 +176,11 @@ Peripherique::ThermiqueStation::getListOfSensors()
     DIR             *directory;
     struct dirent   *directoryEntry;
 
-    directory = opendir(Therma::SensorsPath.c_str());
+    directory = opendir(Raspberry::DevicesPath.c_str());
     if (directory == NULL)
     {
         ReportError("[Périphérique] Cannot get access to '%s': errno=%d",
-                Therma::SensorsPath.c_str(),
+                Raspberry::DevicesPath.c_str(),
                 errno);
 
         throw;
@@ -207,7 +207,7 @@ Peripherique::ThermiqueStation::getListOfSensors()
         if (directoryEntry->d_type != DT_LNK)
             continue;
 
-        if (strlen(directoryEntry->d_name) != Therma::DeviceIdNameLength)
+        if (strlen(directoryEntry->d_name) != Raspberry::DeviceIdNameLength)
             continue;
 
         Peripherique::ThermiqueSensor* sensor = NULL;

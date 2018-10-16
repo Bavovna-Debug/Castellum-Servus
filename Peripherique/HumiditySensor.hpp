@@ -7,16 +7,16 @@
 
 // Common definition files.
 //
-#include "GPIO/DHT.hpp"
+#include "Raspberry/DHT.hpp"
 
 namespace Peripherique
 {
     /**
      * Humidity sensor.
      */
-    class HumiditySensor : public Therma::DHT
+    class HumiditySensor : public Raspberry::DHT
     {
-        typedef Therma::DHT Inherited;
+        typedef Raspberry::DHT Inherited;
 
     public:
         std::string token;

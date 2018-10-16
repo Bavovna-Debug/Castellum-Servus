@@ -7,16 +7,16 @@
 
 // Common definition files.
 //
-#include "GPIO/Therma.hpp"
+#include "Raspberry/DS1820.hpp"
 
 namespace Peripherique
 {
     /**
      * Thermique sensor.
      */
-    class ThermiqueSensor : public Therma::Sensor
+    class ThermiqueSensor : public Raspberry::DS1820
     {
-        typedef Therma::Sensor Inherited;
+        typedef Raspberry::DS1820 Inherited;
 
     public:
         std::string token;

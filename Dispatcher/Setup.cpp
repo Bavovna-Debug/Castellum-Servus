@@ -6,8 +6,8 @@
 
 // Common definition files.
 //
-#include "GPIO/Relay.hpp"
-#include "GPIO/Therma.hpp"
+#include "Raspberry/DS1820.hpp"
+#include "Raspberry/Relay.hpp"
 #include "Toolkit/Report.h"
 
 // Local definition files.
@@ -115,7 +115,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
     // Process relays.
     //
     {
-        GPIO::RelayStation& relayStation = GPIO::RelayStation::SharedInstance();
+        Raspberry::RelayStation& relayStation = Raspberry::RelayStation::SharedInstance();
 
         Value& jsonRelayList = jsonServus["Relays"];
 
@@ -144,7 +144,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                         title.c_str(),
                         pinNumber);
 
-                GPIO::Relay* relay = new GPIO::Relay(pinNumber, title);
+                Raspberry::Relay* relay = new Raspberry::Relay(pinNumber, title);
 
                 relayStation += relay;
 
@@ -177,17 +177,17 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
 
             assert(jsonListOfDHT.IsArray());
 
-            for (SizeType humidityIndex = 0;
-                 humidityIndex < jsonListOfDHT.Size();
-                 humidityIndex++)
+            for (SizeType sensorIndex = 0;
+                 sensorIndex < jsonListOfDHT.Size();
+                 sensorIndex++)
             {
-                Value& jsonHumidity = jsonListOfDHT[humidityIndex];
+                Value& jsonSensor = jsonListOfDHT[sensorIndex];
 
-                const std::string thermaToken   = jsonHumidity["Token"].GetString();
-                const unsigned int pinNumber    = jsonHumidity["PinNumber"].GetInt();
-                const float humidityEdge        = jsonHumidity["HumidityEdge"].GetDouble();
-                const float temperatureEdge     = jsonHumidity["TemperatureEdge"].GetDouble();
-                const std::string title         = jsonHumidity["Title"].GetString();
+                const std::string token         = jsonSensor["Token"].GetString();
+                const unsigned int pinNumber    = jsonSensor["PinNumber"].GetInt();
+                const float humidityEdge        = jsonSensor["HumidityEdge"].GetDouble();
+                const float temperatureEdge     = jsonSensor["TemperatureEdge"].GetDouble();
+                const std::string title         = jsonSensor["Title"].GetString();
 
                 ReportInfo("[Dispatcher] Setup DHT11/DHT22 sensor '%s' on GPIO pin #%u and edges %0.1f/%0.1f",
                         title.c_str(),
@@ -196,7 +196,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                         temperatureEdge);
 
                 humidityStation += new Peripherique::HumiditySensor(
-                        thermaToken,
+                        token,
                         pinNumber,
                         humidityEdge,
                         temperatureEdge,
@@ -224,16 +224,16 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
 
             assert(jsonListOfDS.IsArray());
 
-            for (SizeType thermaIndex = 0;
-                 thermaIndex < jsonListOfDS.Size();
-                 thermaIndex++)
+            for (SizeType sensorIndex = 0;
+                 sensorIndex < jsonListOfDS.Size();
+                 sensorIndex++)
             {
-                Value& jsonTherma = jsonListOfDS[thermaIndex];
+                Value& jsonSensor = jsonListOfDS[sensorIndex];
 
-                const std::string thermaToken   = jsonTherma["Token"].GetString();
-                const std::string deviceId      = jsonTherma["DeviceId"].GetString();
-                const float temperatureEdge     = jsonTherma["TemperatureEdge"].GetDouble();
-                const std::string title         = jsonTherma["Title"].GetString();
+                const std::string token         = jsonSensor["Token"].GetString();
+                const std::string deviceId      = jsonSensor["DeviceId"].GetString();
+                const float temperatureEdge     = jsonSensor["TemperatureEdge"].GetDouble();
+                const std::string title         = jsonSensor["Title"].GetString();
 
                 ReportInfo("[Dispatcher] Setup DS18B20/DS18S20 sensor '%s' with device id %s and edge %0.1f",
                         title.c_str(),
@@ -241,7 +241,7 @@ Dispatcher::ProcessConfigurationJSON(const std::string& json)
                         temperatureEdge);
 
                 thermiqueStation += new Peripherique::ThermiqueSensor(
-                        thermaToken,
+                        token,
                         deviceId,
                         temperatureEdge,
                         title);
